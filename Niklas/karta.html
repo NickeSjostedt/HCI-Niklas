@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f6f1" />
+    <meta name="description" content="Karta-portal i Valkompanjonen." />
+    <title>Karta | Valkompanjonen</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html#top" aria-label="Valkompanjonen, till startsidan">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>Valkompanjonen</span>
+      </a>
+      <nav class="main-nav" aria-label="Huvudmeny">
+        <a href="index.html#top">Hem</a>
+      </nav>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="right-menu-panel">
+        <span class="menu-toggle-label">Meny</span>
+        <span class="menu-toggle-icon" aria-hidden="true">☰</span>
+      </button>
+    </header>
+
+    <aside class="right-menu-panel" id="right-menu-panel" aria-label="Snabbmeny">
+      <nav class="menu-links" aria-label="Snabbnavigering">
+        <a href="valstugor.html">Valstugor</a>
+        <a href="index.html#kallor">Källor</a>
+        <a href="debatt.html">Debatt</a>
+        <a href="karta.html" aria-current="page">Karta</a>
+      </nav>
+    </aside>
+
+    <main class="content-width page-shell" id="top">
+      <section class="info-card page-standalone" aria-labelledby="karta-title">
+        <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> Karta</p>
+        <h1 id="karta-title">Karta</h1>
+        <p>Här kan du lägga till lokala valaktiviteter, närliggande valstugor eller andra viktiga platser i ett framtida flöde.</p>
+        <div class="map-placeholder" aria-label="Kartplats för valaktiviteter">
+          <span>🗺️</span>
+          <strong>Kommande kartvy</strong>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer content-width"><a class="brand footer-brand" href="index.html#top"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Valkompanjonen</span></a><span>En neutral början på ett viktigt samtal.</span></footer>
+    <script src="app.js" defer></script>
+  </body>
+</html>

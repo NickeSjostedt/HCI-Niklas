@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f6f1" />
+    <meta name="description" content="Partifokuserad chatt för ett politiskt parti i Valkompanjonens demo." />
+    <title>Parti i fokus | Valkompanjonen</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="party.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html#top" aria-label="Valkompanjonen, till startsidan">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>Valkompanjonen</span>
+      </a>
+      <nav class="main-nav" aria-label="Huvudmeny">
+        <a href="index.html#top">Hem</a>
+        <a href="valstugor.html" aria-current="page">Valstugor</a>
+        <a href="index.html#kallor">Källor</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="party-page content-width" aria-labelledby="party-name">
+        <div class="page-intro">
+          <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> Parti i fokus</p>
+          <h1 id="party-name">Laddar parti...</h1>
+          <p id="party-intro">Laddar text...</p>
+        </div>
+
+        <section class="chat-section" aria-labelledby="party-chat-title">
+          <div class="chat-intro">
+            <div class="party-logo-box" aria-hidden="true">
+              <img id="party-logo" src="" alt="" />
+            </div>
+            <p class="eyebrow">Egen partichatt</p>
+            <h2 id="party-chat-title">Fråga om <span id="party-name-inline">partiet</span></h2>
+            <p id="party-focus">En neutral demo där partiet är i fokus.</p>
+            <p class="demo-label"><span aria-hidden="true"></span> Lokal demo</p>
+          </div>
+
+          <section class="chat-box" aria-labelledby="party-chat-heading">
+            <div class="chat-title-row">
+              <div>
+                <p class="eyebrow">Partifokus</p>
+                <h2 id="party-chat-heading">Samtal om <span id="party-short-name">partiet</span></h2>
+              </div>
+              <span class="demo-label"><span aria-hidden="true"></span> Demo</span>
+            </div>
+
+            <div class="chat-topbar">
+              <div class="chat-avatar" aria-hidden="true">V.</div>
+              <div>
+                <strong id="chat-bot-name">Valkompanjonen</strong>
+                <span id="chat-bot-status">Partiet i fokus</span>
+              </div>
+              <span class="chat-status" aria-label="Demo-läge"></span>
+            </div>
+
+            <div class="messages" id="messages" role="log" aria-live="polite" aria-relevant="additions"></div>
+
+            <div class="suggestions" aria-label="Förslag på frågor">
+              <button class="suggestion party-suggestion" type="button" data-prompt="Vad vill partiet lyfta när det gäller välfärd och vård?">Välfärd</button>
+              <button class="suggestion party-suggestion" type="button" data-prompt="Hur vill partiet beskriva skolan och utbildningen?">Skola</button>
+              <button class="suggestion party-suggestion" type="button" data-prompt="Vilka frågor vill partiet lyfta kring ekonomi och jobb?">Ekonomi</button>
+            </div>
+
+            <form class="chat-form" id="party-chat-form">
+              <label class="visually-hidden" for="party-chat-input">Skriv din fråga</label>
+              <input id="party-chat-input" name="message" type="text" placeholder="Skriv en fråga om partiet..." autocomplete="off" required />
+              <button class="send-button" type="submit" aria-label="Skicka fråga"><span aria-hidden="true">↑</span></button>
+            </form>
+
+            <p class="chat-disclaimer">Demo utan verifierade valdata eller extern AI. Kontrollera partiets egna publikationer och källor.</p>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer content-width"><a class="brand footer-brand" href="index.html#top"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Valkompanjonen</span></a><span>En neutral början på ett viktigt samtal.</span></footer>
+  </body>
+</html>

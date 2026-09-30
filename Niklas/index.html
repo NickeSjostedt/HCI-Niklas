@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f6f1" />
+    <meta name="description" content="Utforska valfrågor och samla det du vill veta mer om med Valkompanjonen." />
+    <title>Valkompanjonen</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Valkompanjonen, till sidans början">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>Valkompanjonen</span>
+      </a>
+      <nav class="main-nav" aria-label="Huvudmeny">
+        <a href="#top" aria-current="page">Hem</a>
+      </nav>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="right-menu-panel">
+        <span class="menu-toggle-label">Meny</span>
+        <span class="menu-toggle-icon" aria-hidden="true">☰</span>
+      </button>
+    </header>
+
+    <aside class="right-menu-panel" id="right-menu-panel" aria-label="Snabbmeny">
+      <nav class="menu-links" aria-label="Snabbnavigering">
+        <a href="valstugor.html">Valstugor</a>
+        <a href="#kallor">Källor</a>
+        <a href="debatt.html">Debatt</a>
+        <a href="karta.html">Karta</a>
+      </nav>
+    </aside>
+
+    <main id="top">
+      <section class="home-stage content-width" aria-labelledby="chat-title">
+        <section class="chat-box primary-chat" id="chat" aria-labelledby="chat-title">
+          <div class="chat-title-row">
+            <div>
+              <p class="eyebrow">Din fråga, i din takt</p>
+              <h2 id="chat-title">Vad vill du reda ut?</h2>
+            </div>
+            <span class="demo-label"><span aria-hidden="true"></span> Lokal demo</span>
+          </div>
+          <div class="chat-topbar">
+            <div class="chat-avatar" aria-hidden="true">V.</div>
+            <div><strong>Valkompanjonen</strong><span>Här för att hjälpa dig tänka vidare</span></div>
+            <span class="chat-status" aria-label="Demo-läge"></span>
+          </div>
+          <div class="messages" id="messages" role="log" aria-live="polite" aria-relevant="additions">
+            <div class="message bot-message">Hej! Vad skulle du vilja förstå bättre inför valet? Jag kan hjälpa dig att reda ut begrepp och hitta bra följdfrågor. <span class="message-time">Nu</span></div>
+          </div>
+          <div class="suggestions" aria-label="Förslag på frågor">
+            <button class="suggestion" type="button" data-prompt="Hur kan jag jämföra partiernas förslag sakligt?">Jämföra förslag</button>
+            <button class="suggestion" type="button" data-prompt="Vad ska jag titta efter när jag läser ett vallöfte?">Förstå vallöften</button>
+          </div>
+          <form class="chat-form" id="chat-form">
+            <label class="visually-hidden" for="chat-input">Skriv din fråga</label>
+            <input id="chat-input" name="message" type="text" placeholder="Skriv en fråga..." autocomplete="off" required />
+            <button class="send-button" type="submit" aria-label="Skicka fråga"><span aria-hidden="true">↑</span></button>
+          </form>
+          <p class="chat-disclaimer">Demo utan aktuell valdata eller extern AI. Kontrollera sakuppgifter mot originalkällor.</p>
+        </section>
+      </section>
+
+      <section class="questions content-width" id="fragor" aria-labelledby="questions-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Börja här</p>
+            <h2 id="questions-title">Vilka frågor vill du förstå bättre?</h2>
+          </div>
+          <p class="section-hint">Välj upp till tre. Du kan ändra dig när som helst.</p>
+        </div>
+
+        <div class="topic-layout">
+          <fieldset class="topic-grid" aria-label="Välj ämnen">
+            <legend class="visually-hidden">Dina viktigaste frågor</legend>
+            <label class="topic topic-green">
+              <input type="checkbox" name="topic" value="Vård" />
+              <span class="topic-icon" aria-hidden="true">+</span><span class="topic-name">Vård</span><span class="topic-arrow" aria-hidden="true">↗</span>
+            </label>
+            <label class="topic topic-yellow">
+              <input type="checkbox" name="topic" value="Skola" />
+              <span class="topic-icon" aria-hidden="true">A</span><span class="topic-name">Skola</span><span class="topic-arrow" aria-hidden="true">↗</span>
+            </label>
+            <label class="topic topic-coral">
+              <input type="checkbox" name="topic" value="Ekonomi" />
+              <span class="topic-icon" aria-hidden="true">↗</span><span class="topic-name">Ekonomi</span><span class="topic-arrow" aria-hidden="true">↗</span>
+            </label>
+            <label class="topic topic-blue">
+              <input type="checkbox" name="topic" value="Klimat och miljö" />
+              <span class="topic-icon" aria-hidden="true">~</span><span class="topic-name">Klimat och miljö</span><span class="topic-arrow" aria-hidden="true">↗</span>
+            </label>
+            <label class="topic topic-pink">
+              <input type="checkbox" name="topic" value="Trygghet" />
+              <span class="topic-icon" aria-hidden="true">◎</span><span class="topic-name">Trygghet</span><span class="topic-arrow" aria-hidden="true">↗</span>
+            </label>
+            <label class="topic topic-lilac">
+              <input type="checkbox" name="topic" value="Jobb" />
+              <span class="topic-icon" aria-hidden="true">⌁</span><span class="topic-name">Jobb</span><span class="topic-arrow" aria-hidden="true">↗</span>
+            </label>
+          </fieldset>
+
+          <aside class="priority-panel" aria-live="polite" aria-labelledby="priority-title">
+            <div class="priority-topline"><span class="priority-mark" aria-hidden="true">V.</span><span id="topic-count">0 av 3 valda</span></div>
+            <h3 id="priority-title">Din kompass</h3>
+            <p id="priority-copy">Välj en fråga som ligger dig nära, så börjar vi där.</p>
+            <ul class="priority-list" id="priority-list"><li class="empty-priority">Dina val syns här</li></ul>
+            <button class="text-button" id="ask-topics" type="button" disabled>Prata om mina val <span aria-hidden="true">→</span></button>
+          </aside>
+        </div>
+      </section>
+
+      <section class="info-section sources-section content-width" id="kallor" aria-labelledby="sources-title">
+        <div class="info-heading">
+          <div><p class="eyebrow">Börja i originalkällan</p><h2 id="sources-title">Källor</h2></div>
+          <p>Kontrollera sakuppgifter, valinformation och politiska förslag där de publiceras.</p>
+        </div>
+        <div class="source-list">
+          <a class="source-link" href="https://www.val.se/" target="_blank" rel="noreferrer"><span><strong>Valmyndigheten</strong><small>Officiell information om val och röstande</small></span><span class="source-arrow" aria-hidden="true">↗</span></a>
+          <a class="source-link" href="https://www.riksdagen.se/sv/dokument-och-lagar/" target="_blank" rel="noreferrer"><span><strong>Sveriges riksdag</strong><small>Dokument, lagförslag och beslut</small></span><span class="source-arrow" aria-hidden="true">↗</span></a>
+          <a class="source-link" href="https://www.regeringen.se/" target="_blank" rel="noreferrer"><span><strong>Regeringen</strong><small>Propositioner, uppdrag och beslut</small></span><span class="source-arrow" aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer content-width"><a class="brand footer-brand" href="#top"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Valkompanjonen</span></a><span>En neutral början på ett viktigt samtal.</span></footer>
+  </body>
+</html>
