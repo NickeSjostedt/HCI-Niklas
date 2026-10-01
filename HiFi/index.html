@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kompass | Fråga din valkompanjon</title>
+    <meta
+      name="description"
+      content="Kompass hjälper dig att förstå politiska frågor, jämföra perspektiv och fatta informerade beslut."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="siteShell" class="site-shell">
+      <header class="topbar">
+        <button id="menuButton" class="menu-button" type="button" aria-label="Öppna navigation" aria-expanded="false" aria-controls="siteMenu">
+          <span></span><span></span><span></span>
+        </button>
+        <a id="homeLink" class="wordmark" href="#top" aria-label="Kompass startsida">KOMPASS<span>●</span></a>
+        <div class="topbar-actions">
+          <button id="aboutButton" class="text-button" type="button">Om Kompass</button>
+          <button id="themeToggle" class="theme-toggle" type="button" aria-label="Byt färgtema">
+            <span aria-hidden="true">☼</span>
+          </button>
+        </div>
+      </header>
+
+      <aside id="siteMenu" class="site-menu" aria-label="Sidonavigation">
+        <div class="sidebar-heading">
+          <span class="sidebar-caption">MENY</span>
+        </div>
+        <nav aria-label="Huvudmeny">
+          <a class="sidebar-link is-active" data-view="home" href="#top" aria-label="Samtal" title="Samtal"><span class="nav-icon" aria-hidden="true">⌂</span><span class="nav-label">Samtal</span></a>
+          <button id="mindmapButton" class="sidebar-link" type="button" data-view="mindmap" aria-label="Mindmap mode" title="Mindmap mode"><span class="nav-icon" aria-hidden="true">✦</span><span class="nav-label">Mindmap mode</span></button>
+          <button id="partyViewButton" class="sidebar-link" type="button" data-view="party" aria-label="Valstugor" title="Valstugor"><span class="nav-icon" aria-hidden="true">◉</span><span class="nav-label">Valstugor</span></button>
+          <button id="debateViewButton" class="sidebar-link" type="button" data-view="debate" aria-label="Debatt" title="Debatt"><span class="nav-icon" aria-hidden="true">◈</span><span class="nav-label">Debatt</span></button>
+          <button id="sourcesButton" class="sidebar-link" type="button" aria-label="Källor" title="Källor"><span class="nav-icon" aria-hidden="true">↗</span><span class="nav-label">Källor</span></button>
+          <a class="sidebar-link" href="#how-it-works" aria-label="Så fungerar det" title="Så fungerar det"><span class="nav-icon" aria-hidden="true">i</span><span class="nav-label">Så fungerar det</span></a>
+        </nav>
+        <p class="sidebar-note">Nyfikenhet först.<br />Partipolitik sen.</p>
+      </aside>
+      <button id="sidebarScrim" class="sidebar-scrim" type="button" aria-label="Stäng navigation" hidden></button>
+
+      <main id="top" class="app-main">
+        <div id="homeView" class="home-view">
+        <section id="ask" class="ask-section">
+          <div class="hero-content">
+            <p class="kicker">Din politiska valkompanjon</p>
+            <h1>Ställ en fråga till <em>din valkompanjon</em></h1>
+            <button id="newConversationButton" class="new-conversation-button" type="button" hidden><span aria-hidden="true">+</span> Ny konversation</button>
+            <p class="intro">
+              Ställ en fråga, börja en diskussion eller fråga om din personliga politiska karta.
+            </p>
+
+            <form id="questionForm" class="question-form">
+              <label class="sr-only" for="questionInput">Skriv din politiska fråga</label>
+              <input
+                id="questionInput"
+                name="question"
+                type="text"
+                autocomplete="off"
+                placeholder="Vad vill du veta mer om?"
+              />
+              <button type="submit" aria-label="Skicka fråga">+</button>
+            </form>
+            <p id="questionMessage" class="question-message" aria-live="polite"></p>
+
+            <div class="suggestions" aria-label="Förslag på frågor">
+              <button type="button" data-question="Hur vill partierna lösa klimatkrisen?">Klimat</button>
+              <button type="button" data-question="Hur påverkar politiken min ekonomi?">Min ekonomi</button>
+              <button type="button" data-question="Vad skiljer partiernas syn på vården?">Vård</button>
+            </div>
+
+            <div id="conversation" class="conversation" aria-live="polite" aria-label="Samtal">
+              <div class="conversation-empty">Din dialog och källorna bakom svaren visas här.</div>
+            </div>
+          </div>
+
+          <div class="scroll-cue" aria-hidden="true"><span>↓</span> utforska</div>
+        </section>
+
+        <aside id="compare" class="party-rail" data-view="pie" aria-label="Partijämförelse">
+          <button id="railToggle" class="rail-toggle" type="button" aria-expanded="true" aria-controls="railContent">
+            <span class="rail-toggle-label">Dölj jämförelse</span><span class="rail-toggle-icon" aria-hidden="true">›</span>
+          </button>
+          <div id="railContent" class="rail-content">
+            <div class="rail-heading">
+              <p>Överensstämmelser</p>
+              <span>din karta · exempeldata</span>
+            </div>
+            <div class="view-switcher" role="group" aria-label="Visning av överensstämmelser">
+              <button type="button" data-view="percent" aria-pressed="false" aria-label="Visa procent">%</button>
+              <button type="button" data-view="pie" aria-pressed="true" aria-label="Visa cirkeldiagram">◉</button>
+              <button type="button" data-view="bars" aria-pressed="false" aria-label="Visa stapeldiagram">▥</button>
+            </div>
+            <div id="partyList" class="party-list">
+              <button class="party-row" type="button" data-party="MP" data-match="82" aria-label="Miljöpartiet, exempelvis 82 procent">
+                <span class="party-symbol party-mp">✺</span><span class="party-name">Miljöpartiet</span>
+                <span class="match-percent">82%</span><span class="match-pie" aria-hidden="true"><i>82%</i></span><span class="match-bar" aria-hidden="true"><i></i></span>
+              </button>
+              <button class="party-row" type="button" data-party="S" data-match="74" aria-label="Socialdemokraterna, exempelvis 74 procent">
+                <span class="party-symbol party-s">✿</span><span class="party-name">Socialdemokraterna</span>
+                <span class="match-percent">74%</span><span class="match-pie" aria-hidden="true"><i>74%</i></span><span class="match-bar" aria-hidden="true"><i></i></span>
+              </button>
+              <button class="party-row" type="button" data-party="C" data-match="66" aria-label="Centerpartiet, exempelvis 66 procent">
+                <span class="party-symbol party-c">❀</span><span class="party-name">Centerpartiet</span>
+                <span class="match-percent">66%</span><span class="match-pie" aria-hidden="true"><i>66%</i></span><span class="match-bar" aria-hidden="true"><i></i></span>
+              </button>
+              <button class="party-row" type="button" data-party="V" data-match="61" aria-label="Vänsterpartiet, exempelvis 61 procent">
+                <span class="party-symbol party-v">V</span><span class="party-name">Vänsterpartiet</span>
+                <span class="match-percent">61%</span><span class="match-pie" aria-hidden="true"><i>61%</i></span><span class="match-bar" aria-hidden="true"><i></i></span>
+              </button>
+              <button class="party-row" type="button" data-party="M" data-match="54" aria-label="Moderaterna, exempelvis 54 procent">
+                <span class="party-symbol party-m">M</span><span class="party-name">Moderaterna</span>
+                <span class="match-percent">54%</span><span class="match-pie" aria-hidden="true"><i>54%</i></span><span class="match-bar" aria-hidden="true"><i></i></span>
+              </button>
+              <button class="party-row" type="button" data-party="KD" data-match="48" aria-label="Kristdemokraterna, exempelvis 48 procent">
+                <span class="party-symbol party-kd">✦</span><span class="party-name">Kristdemokraterna</span>
+                <span class="match-percent">48%</span><span class="match-pie" aria-hidden="true"><i>48%</i></span><span class="match-bar" aria-hidden="true"><i></i></span>
+              </button>
+              <button class="party-row" type="button" data-party="L" data-match="43" aria-label="Liberalerna, exempelvis 43 procent">
+                <span class="party-symbol party-l">L</span><span class="party-name">Liberalerna</span>
+                <span class="match-percent">43%</span><span class="match-pie" aria-hidden="true"><i>43%</i></span><span class="match-bar" aria-hidden="true"><i></i></span>
+              </button>
+              <button class="party-row" type="button" data-party="SD" data-match="39" aria-label="Sverigedemokraterna, exempelvis 39 procent">
+                <span class="party-symbol party-sd">SD</span><span class="party-name">Sverigedemokraterna</span>
+                <span class="match-percent">39%</span><span class="match-pie" aria-hidden="true"><i>39%</i></span><span class="match-bar" aria-hidden="true"><i></i></span>
+              </button>
+            </div>
+            <button id="compareButton" class="rail-link" type="button">Se hela jämförelsen <span>→</span></button>
+          </div>
+        </aside>
+
+        <section id="how-it-works" class="info-section">
+          <div class="section-label">01 / Så fungerar det</div>
+          <div class="info-grid">
+            <div>
+              <h2>Mer än bara<br /><em>en åsikt.</em></h2>
+            </div>
+            <div class="info-copy">
+              <p>
+                Kompass hjälper dig att se vad som faktiskt skiljer olika politiska förslag åt.
+                Du får sammanhang, källor och flera perspektiv — utan att någon säger åt dig vad
+                du ska tycka.
+              </p>
+              <div class="principles">
+                <div><strong>01</strong><span>Fråga fritt</span></div>
+                <div><strong>02</strong><span>Jämför sakligt</span></div>
+                <div><strong>03</strong><span>Bestäm själv</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="about" class="quote-section">
+          <p class="kicker">Ett bättre samtal börjar här</p>
+          <blockquote>“Demokrati fungerar bäst när vi förstår varandra — även när vi inte håller med.”</blockquote>
+          <button id="aboutButtonSecondary" class="outline-button" type="button">Läs mer om Kompass <span>↗</span></button>
+        </section>
+        </div>
+
+        <section id="mindmapPage" class="mindmap-view" aria-labelledby="mindmapTitle" hidden>
+          <header class="mindmap-header">
+            <div>
+              <p class="kicker">02 / Ditt sammanhang</p>
+              <h1 id="mindmapTitle">Mindmap mode</h1>
+              <p class="mindmap-lead">Koppla nya insikter till det du redan har utforskat.</p>
+            </div>
+          </header>
+
+          <div class="mindmap-page-layout">
+            <section class="mindmap-map-section" aria-labelledby="mapHeading">
+              <div class="mindmap-section-heading">
+                <div>
+                  <p class="section-label">Ditt nätverk av idéer</p>
+                  <h2 id="mapHeading">Din politiska karta</h2>
+                </div>
+                <p class="map-instruction">Välj en nod för att se samtal, fakta och källor.</p>
+              </div>
+              <div class="map-canvas" aria-label="Interaktiv kunskapskarta">
+                <svg class="map-connections" viewBox="0 0 800 520" preserveAspectRatio="none" aria-hidden="true">
+                  <line x1="400" y1="60" x2="200" y2="218"></line>
+                  <line x1="400" y1="60" x2="600" y2="218"></line>
+                  <line x1="200" y1="218" x2="400" y2="432"></line>
+                  <line x1="600" y1="218" x2="400" y2="432"></line>
+                  <line x1="400" y1="260" x2="400" y2="60"></line>
+                </svg>
+                <button class="map-node node-center is-selected" type="button" data-node="start" aria-pressed="true">
+                  <span>Din karta</span><small>startpunkt</small>
+                </button>
+                <button class="map-node node-climate" type="button" data-node="climate" aria-pressed="false">
+                  <span>Miljö</span><small>3 samtal</small>
+                </button>
+                <button class="map-node node-economy" type="button" data-node="economy" aria-pressed="false">
+                  <span>Ekonomi</span><small>2 samtal</small>
+                </button>
+                <button class="map-node node-welfare" type="button" data-node="welfare" aria-pressed="false">
+                  <span>Samhälle</span><small>1 samtal</small>
+                </button>
+                <button class="map-node node-democracy" type="button" data-node="democracy" aria-pressed="false">
+                  <span>Demokrati</span><small>ny insikt</small>
+                </button>
+              </div>
+            </section>
+
+            <aside class="node-details" aria-live="polite">
+              <p class="kicker">Vald kunskap</p>
+              <h2 id="nodeTitle">Din politiska karta</h2>
+              <p id="nodeDescription">Här samlas teman från dina frågor och tidigare samtal. Bygg vidare när du lär dig något nytt.</p>
+              <div class="source-card">
+                <span id="nodeSourceLabel">Senast sparad</span>
+                <strong id="nodeSource">Din första fråga om klimatet</strong>
+                <small id="nodeSourceMeta">För 2 dagar sedan · 4 min läsning</small>
+              </div>
+              <section class="node-history" aria-labelledby="nodeHistoryTitle">
+                <h3 id="nodeHistoryTitle">Från tidigare samtal</h3>
+                <p id="nodeHistory"></p>
+              </section>
+              <section class="node-facts" aria-labelledby="nodeFactsTitle">
+                <h3 id="nodeFactsTitle">Fakta att ta med</h3>
+                <ul id="nodeFacts"></ul>
+              </section>
+              <section class="node-evidence" aria-labelledby="nodeEvidenceTitle">
+                <h3 id="nodeEvidenceTitle">Källor till denna nod</h3>
+                <ul id="nodeEvidence"></ul>
+                <button id="openNodeSources" class="node-sources-button" type="button">Öppna källistan <span>↗</span></button>
+              </section>
+              <form id="connectionForm" class="connection-form">
+                <label for="connectionInput">Lägg till en koppling</label>
+                <div>
+                  <input id="connectionInput" type="text" placeholder="Till exempel energi..." />
+                  <button type="submit" aria-label="Lägg till koppling">+</button>
+                </div>
+                <p id="connectionMessage" aria-live="polite"></p>
+              </form>
+            </aside>
+          </div>
+        </section>
+
+        <section id="partyView" class="party-view" aria-labelledby="partyTitle" hidden>
+          <div class="party-picker" id="partyPicker">
+            <header class="party-heading">
+              <h1 id="partyTitle">Prata med ett parti</h1>
+              <p>Välj det parti du vill skriva till.</p>
+            </header>
+            <div class="party-grid" role="group" aria-label="Välj ett parti">
+              <button class="party-option" type="button" data-party="Socialdemokraterna" aria-pressed="false"><img class="party-logo" src="assets/parties/socialdemokraterna.png" alt=""><span>Socialdemokraterna</span></button>
+              <button class="party-option" type="button" data-party="Moderaterna" aria-pressed="false"><img class="party-logo" src="assets/parties/moderaterna.png" alt=""><span>Moderaterna</span></button>
+              <button class="party-option" type="button" data-party="Sverigedemokraterna" aria-pressed="false"><img class="party-logo" src="assets/parties/sverigedemokraterna.png" alt=""><span>Sverigedemokraterna</span></button>
+              <button class="party-option" type="button" data-party="Centerpartiet" aria-pressed="false"><img class="party-logo" src="assets/parties/centerpartiet.png" alt=""><span>Centerpartiet</span></button>
+              <button class="party-option" type="button" data-party="Vänsterpartiet" aria-pressed="false"><img class="party-logo" src="assets/parties/vänsterpartiet.png" alt=""><span>Vänsterpartiet</span></button>
+              <button class="party-option" type="button" data-party="Kristdemokraterna" aria-pressed="false"><img class="party-logo" src="assets/parties/kristdemokraterna.png" alt=""><span>Kristdemokraterna</span></button>
+              <button class="party-option" type="button" data-party="Liberalerna" aria-pressed="false"><img class="party-logo" src="assets/parties/Liberalerna.png" alt=""><span>Liberalerna</span></button>
+              <button class="party-option" type="button" data-party="Miljöpartiet" aria-pressed="false"><img class="party-logo" src="assets/parties/miljöpartiet.png" alt=""><span>Miljöpartiet</span></button>
+            </div>
+          </div>
+          <section class="party-chat" id="partyChat" aria-labelledby="partyChatTitle" hidden>
+            <button class="party-back" id="partyBack" type="button"><span aria-hidden="true">←</span> Välj ett annat parti</button>
+            <div class="party-chat-brand">
+              <img id="partyChatLogo" src="" alt="">
+              <h2 id="partyChatTitle"></h2>
+            </div>
+            <span class="party-assistant-status"><span class="status-dot"></span> Partiets frågestuga</span>
+            <div class="party-chat-log" id="partyChatLog" aria-live="polite" aria-label="Konversation med partiet"></div>
+            <form class="party-chat-form" id="partyChatForm">
+              <label class="sr-only" for="partyChatInput">Skriv ditt meddelande</label>
+              <input id="partyChatInput" name="message" type="text" placeholder="Skriv ditt meddelande här …" autocomplete="off" required>
+              <span class="party-input-hint">Tryck Enter för att skicka</span>
+              <button class="party-send-button" type="submit" aria-label="Skicka meddelande" title="Skicka meddelande"><span aria-hidden="true">→</span></button>
+            </form>
+            <p class="party-disclaimer">Det här är en prototyp. Ditt meddelande skickas inte till partiet.</p>
+          </section>
+        </section>
+
+        <section id="debateView" class="debate-view" aria-labelledby="debateTitle" hidden>
+          <header class="debate-header">
+            <p class="kicker">Flera perspektiv</p>
+            <h1 id="debateTitle">Debatt</h1>
+            <p>Välj vilka partier som ska vara aktiva i chatten och ställ din fråga.</p>
+          </header>
+          <div class="debate-layout">
+            <section class="debate-chat" aria-label="Debattchatt">
+              <div class="debate-log" id="debateLog" aria-live="polite" aria-label="Debattkonversation">
+                <p class="debate-empty">Välj minst ett parti för att starta debatten.</p>
+              </div>
+              <form class="debate-form" id="debateForm">
+                <label class="sr-only" for="debateInput">Skriv en fråga till debatten</label>
+                <input id="debateInput" name="question" type="text" autocomplete="off" placeholder="Skriv din fråga här...">
+                <button type="submit" aria-label="Skicka fråga">+</button>
+              </form>
+              <p class="debate-feedback" id="debateFeedback" aria-live="polite"></p>
+              <p class="debate-disclaimer">Det här är en prototyp. Svaren är exempel och kommer inte från partierna.</p>
+            </section>
+            <aside class="debate-party-box" aria-labelledby="debatePartiesTitle">
+              <h2 id="debatePartiesTitle">Aktiva partier</h2>
+              <p>Välj vilka som ska delta i chatten.</p>
+              <div class="debate-party-list" id="debatePartyList">
+                <label class="debate-party-option"><input type="checkbox" value="Socialdemokraterna"><img src="assets/parties/socialdemokraterna.png" alt=""><span>Socialdemokraterna</span></label>
+                <label class="debate-party-option"><input type="checkbox" value="Moderaterna"><img src="assets/parties/moderaterna.png" alt=""><span>Moderaterna</span></label>
+                <label class="debate-party-option"><input type="checkbox" value="Sverigedemokraterna"><img src="assets/parties/sverigedemokraterna.png" alt=""><span>Sverigedemokraterna</span></label>
+                <label class="debate-party-option"><input type="checkbox" value="Centerpartiet"><img src="assets/parties/centerpartiet.png" alt=""><span>Centerpartiet</span></label>
+                <label class="debate-party-option"><input type="checkbox" value="Vänsterpartiet"><img src="assets/parties/vänsterpartiet.png" alt=""><span>Vänsterpartiet</span></label>
+                <label class="debate-party-option"><input type="checkbox" value="Kristdemokraterna"><img src="assets/parties/kristdemokraterna.png" alt=""><span>Kristdemokraterna</span></label>
+                <label class="debate-party-option"><input type="checkbox" value="Liberalerna"><img src="assets/parties/Liberalerna.png" alt=""><span>Liberalerna</span></label>
+                <label class="debate-party-option"><input type="checkbox" value="Miljöpartiet"><img src="assets/parties/miljöpartiet.png" alt=""><span>Miljöpartiet</span></label>
+              </div>
+              <p class="debate-party-count" id="debatePartyCount" aria-live="polite">0 av 8 partier valda</p>
+            </aside>
+          </div>
+        </section>
+
+      </main>
+      <footer class="footer">
+        <span>© 2025 KOMPASS</span>
+        <span>Byggd för nyfikenhet och fria val.</span>
+      </footer>
+    </div>
+
+    <div id="aboutDialog" class="dialog-backdrop" hidden>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+        <button id="closeDialog" class="close-button" type="button" aria-label="Stäng">×</button>
+        <p class="kicker">Om Kompass</p>
+        <h2 id="dialogTitle">Din röst börjar med en fråga.</h2>
+        <p>Kompass är ett neutralt verktyg för att utforska politik. Vi samlar perspektiv och källor så att du kan bilda dig en egen uppfattning.</p>
+      </div>
+    </div>
+
+    <div id="sourcesPanel" class="dialog-backdrop" hidden>
+      <section class="sources-dialog" role="dialog" aria-modal="true" aria-labelledby="sourcesTitle">
+        <button id="closeSources" class="close-button" type="button" aria-label="Stäng källor">×</button>
+        <p class="kicker">04 / Transparens</p>
+        <h2 id="sourcesTitle">Källor från dina samtal</h2>
+        <p class="sources-intro">Här sparas materialet som använts i dialogen, så att du kan kontrollera och läsa vidare när du vill.</p>
+        <div id="sourceList" class="source-list">
+          <div class="source-empty">Ställ en fråga för att bygga din källista.</div>
+        </div>
+      </section>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
