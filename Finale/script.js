@@ -1,0 +1,2288 @@
+const body = document.body;
+const menuButton = document.getElementById("menuButton");
+const siteMenu = document.getElementById("siteMenu");
+const siteShell = document.getElementById("siteShell");
+const sidebarScrim = document.getElementById("sidebarScrim");
+const homeView = document.getElementById("homeView");
+const mindmapPage = document.getElementById("mindmapPage");
+const partyView = document.getElementById("partyView");
+const debateView = document.getElementById("debateView");
+const homeLink = document.getElementById("homeLink");
+const mobileNavigation = window.matchMedia("(max-width: 760px)");
+const themeToggle = document.getElementById("themeToggle");
+const questionForm = document.getElementById("questionForm");
+const questionInput = document.getElementById("questionInput");
+const questionMessage = document.getElementById("questionMessage");
+const partyRows = document.querySelectorAll(".party-row");
+const compareButton = document.getElementById("compareButton");
+const aboutDialog = document.getElementById("aboutDialog");
+const openRankingOnboarding = document.getElementById("openRankingOnboarding");
+const openPartyRankingOnboarding = document.getElementById("openPartyRankingOnboarding");
+const openSubcategoryRankingPersonal = document.getElementById("openSubcategoryRankingPersonal");
+const openSubcategoryRankingParty = document.getElementById("openSubcategoryRankingParty");
+const rankingOnboarding = document.getElementById("rankingOnboarding");
+const onboardingCategoryList = document.getElementById("onboardingCategoryList");
+const rankingOnboardingTitle = document.getElementById("rankingOnboardingTitle");
+const rankingOnboardingDescription = document.getElementById("rankingOnboardingDescription");
+const closeRankingOnboardingButton = document.getElementById("closeRankingOnboarding");
+const cancelRankingOnboardingButton = document.getElementById("cancelRankingOnboarding");
+const saveRankingOnboardingButton = document.getElementById("saveRankingOnboarding");
+const aboutButtons = [
+  document.getElementById("aboutButton"),
+  document.getElementById("aboutButtonSecondary"),
+];
+const closeDialog = document.getElementById("closeDialog");
+const mindmapButton = document.getElementById("mindmapButton");
+const partyViewButton = document.getElementById("partyViewButton");
+const debateViewButton = document.getElementById("debateViewButton");
+const connectionForm = document.getElementById("connectionForm");
+const connectionInput = document.getElementById("connectionInput");
+const connectionMessage = document.getElementById("connectionMessage");
+const conversation = document.getElementById("conversation");
+const askSection = document.getElementById("ask");
+const newConversationButton = document.getElementById("newConversationButton");
+const sourcesButton = document.getElementById("sourcesButton");
+const sourcesPanel = document.getElementById("sourcesPanel");
+const closeSources = document.getElementById("closeSources");
+const sourceList = document.getElementById("sourceList");
+const openNodeSources = document.getElementById("openNodeSources");
+const nodeTitle = document.getElementById("nodeTitle");
+const nodeDescription = document.getElementById("nodeDescription");
+const nodeSource = document.getElementById("nodeSource");
+const nodeSourceMeta = document.getElementById("nodeSourceMeta");
+const nodeHistory = document.getElementById("nodeHistory");
+const nodeFacts = document.getElementById("nodeFacts");
+const nodeEvidence = document.getElementById("nodeEvidence");
+const railToggle = document.getElementById("railToggle");
+const partyRail = document.getElementById("compare");
+const viewButtons = document.querySelectorAll(".view-switcher [data-view]");
+const partyPicker = document.getElementById("partyPicker");
+const partyOptions = document.querySelectorAll(".party-option");
+const partyChat = document.getElementById("partyChat");
+const partyBack = document.getElementById("partyBack");
+const partyChatLogo = document.getElementById("partyChatLogo");
+const partyChatTitle = document.getElementById("partyChatTitle");
+const partyChatLog = document.getElementById("partyChatLog");
+const partyChatForm = document.getElementById("partyChatForm");
+const partyChatInput = document.getElementById("partyChatInput");
+const debateForm = document.getElementById("debateForm");
+const debateInput = document.getElementById("debateInput");
+const debateLog = document.getElementById("debateLog");
+const debateFeedback = document.getElementById("debateFeedback");
+const debatePartyCount = document.getElementById("debatePartyCount");
+const debatePartyOptions = document.querySelectorAll(".debate-party-option input");
+const likedDebateList = document.getElementById("likedDebateList");
+const likedDebateStorageKey = "kompass_liked_debate_messages";
+let likedDebateMessages = [];
+try {
+  const storedLikedMessages = JSON.parse(localStorage.getItem(likedDebateStorageKey) || "[]");
+  if (Array.isArray(storedLikedMessages)) {
+    likedDebateMessages = storedLikedMessages.filter((message) =>
+      message && typeof message.id === "string"
+      && typeof message.partyName === "string"
+      && typeof message.text === "string",
+    );
+  }
+} catch (error) {
+  likedDebateMessages = [];
+}
+const mapCanvas = document.querySelector(".map-canvas");
+const mapScene = document.getElementById("mapScene");
+const mapSceneFrame = document.getElementById("mapSceneFrame");
+const partyMapCanvas = document.getElementById("partyMapCanvas");
+const partyMapScene = document.getElementById("partyMapScene");
+const partyMapSceneFrame = document.getElementById("partyMapSceneFrame");
+const mapZoomInButton = document.getElementById("mapZoomIn");
+const mapZoomOutButton = document.getElementById("mapZoomOut");
+const mapZoomLabel = document.getElementById("mapZoomLabel");
+const mapShowAllButton = document.getElementById("mapShowAll");
+const mapPartyTabs = document.querySelectorAll(".map-party-tab");
+const mapHeading = document.getElementById("mapHeading");
+const mapCenterNode = mapScene?.querySelector('[data-node="start"]');
+const mapCenterLabel = document.getElementById("mapCenterLabel");
+const mapCenterCaption = document.getElementById("mapCenterCaption");
+const partyMapHeading = document.getElementById("partyMapHeading");
+const partyMapPanel = document.querySelector(".party-map-panel");
+const partyMapZoomInButton = document.getElementById("partyMapZoomIn");
+const partyMapZoomOutButton = document.getElementById("partyMapZoomOut");
+const partyMapZoomLabel = document.getElementById("partyMapZoomLabel");
+const partyMapShowAllButton = document.getElementById("partyMapShowAll");
+
+const partyProfiles = {
+  Socialdemokraterna: { abbreviation: "S", logo: "assets/parties/socialdemokraterna.png", url: "https://www.socialdemokraterna.se/", tint: "#f5d6d1" },
+  Moderaterna: { abbreviation: "M", logo: "assets/parties/moderaterna.png", url: "https://moderaterna.se/", tint: "#d9e6f2" },
+  Sverigedemokraterna: { abbreviation: "SD", logo: "assets/parties/sverigedemokraterna.png", url: "https://sd.se/", tint: "#f5e7af" },
+  Centerpartiet: { abbreviation: "C", logo: "assets/parties/centerpartiet.png", url: "https://www.centerpartiet.se/", tint: "#dcebd7" },
+  Vänsterpartiet: { abbreviation: "V", logo: "assets/parties/vänsterpartiet.png", url: "https://www.vansterpartiet.se/", tint: "#f5d6d1" },
+  Kristdemokraterna: { abbreviation: "KD", logo: "assets/parties/kristdemokraterna.png", url: "https://kristdemokraterna.se/", tint: "#d9e6f2" },
+  Liberalerna: { abbreviation: "L", logo: "assets/parties/Liberalerna.png", url: "https://www.liberalerna.se/", tint: "#d9e6f2" },
+  Miljöpartiet: { abbreviation: "MP", logo: "assets/parties/miljöpartiet.png", url: "https://www.mp.se/", tint: "#dcebd7" },
+};
+let selectedParty = "";
+
+const categoryBadges = document.getElementById("categoryBadges");
+const categoryList = document.getElementById("categoryList");
+const subcategoryList = document.getElementById("subcategoryList");
+
+const categoryDefinitions = [
+  {
+    id: "ekonomi",
+    title: "Ekonomi & skatter",
+    shortTitle: "Ekonomi",
+    subcategories: ["Skatter", "Statsbudget", "Företagande"],
+    description: "Hur skatter, statsbudget och företagsklimat påverkar människors vardag och samhällsutvecklingen.",
+    source: "Ekonomi & skatter",
+    meta: "Skatter • Statsbudget • Företagande",
+    history: "Det här området fokuserar på hur staten finansierar verksamhet, vilka skatter som tas ut och hur företagarna påverkas.",
+    facts: [
+      "Skattesystemet och statsbudgeten avgör hur mycket som kan användas till välfärd, infrastruktur och investeringar.",
+      "Företagande påverkas av skatter, regleringar och hur offentliga investeringar prioriteras.",
+    ],
+    sources: [
+      { title: "Riksdagen · Budget och skatter", url: "https://www.riksdagen.se/sv/" },
+      { title: "Skatteverket", url: "https://www.skatteverket.se/" },
+    ],
+  },
+  {
+    id: "valfard",
+    title: "Välfärd",
+    shortTitle: "Välfärd",
+    subcategories: ["Sjukvård", "Skola", "Äldreomsorg"],
+    description: "Välfärd handlar om hur samhället organiserar sjukvård, skola och stöd till äldre och utsatta grupper.",
+    source: "Välfärd",
+    meta: "Sjukvård • Skola • Äldreomsorg",
+    history: "Det här området jämför hur olika politiska förslag påverkar tillgänglighet, kvalitet och kostnader inom välfärden.",
+    facts: [
+      "Hälso- och sjukvård, skola och äldreomsorg är centrala för social trygghet och lika möjligheter.",
+      "Tillgänglighet och resurser avgör hur väl välfärden fungerar i praktiken.",
+    ],
+    sources: [
+      { title: "Socialstyrelsen", url: "https://www.socialstyrelsen.se/" },
+      { title: "Skolverket", url: "https://www.skolverket.se/" },
+    ],
+  },
+  {
+    id: "lag",
+    title: "Lag & rätt",
+    shortTitle: "Lag & rätt",
+    subcategories: ["Polis", "Domstolar", "Kriminalpolitik"],
+    description: "Omfattar rättssäkerhet, polisens arbete, domstolar och hur brott och straff ska hanteras i samhället.",
+    source: "Lag & rätt",
+    meta: "Polis • Domstolar • Kriminalpolitik",
+    history: "Detta politikområde behandlar trygghet, rättssäkerhet, rättsväsendets resurser och hur brottslighet ska förebyggas.",
+    facts: [
+      "Rättssystemet bygger på legalitet, rättssäkerhet och lika behandling inför lagen.",
+      "Polis, domstolar och kriminalpolitik är centrala för trygghet och förtroende i samhället.",
+    ],
+    sources: [
+      { title: "Brottsförebyggande rådet", url: "https://bra.se/" },
+      { title: "Riksdagen · Rättsväsen", url: "https://www.riksdagen.se/sv/" },
+    ],
+  },
+  {
+    id: "migration",
+    title: "Migration & integration",
+    shortTitle: "Migration",
+    subcategories: ["Asyl", "Integration", "Medborgarskap"],
+    description: "Här ingår hur asyl, migration och integration ska organiseras samt hur medborgarskap och inkludering formas.",
+    source: "Migration & integration",
+    meta: "Asyl • Integration • Medborgarskap",
+    history: "Detta område handlar om ansvar, rättigheter, integration och hur ett land förhåller sig till invandring och inkludering.",
+    facts: [
+      "Integration kräver både individuella stödinsatser och ett fungerande samhälls- och arbetsmarknadsperspektiv.",
+      "Medborgarskap, asylregler och integration är nära kopplade till demokrati och rättigheter.",
+    ],
+    sources: [
+      { title: "Migrationsverket", url: "https://www.migrationsverket.se/" },
+      { title: "Integrationsverket", url: "https://www.integrationsverket.se/" },
+    ],
+  },
+  {
+    id: "miljo",
+    title: "Miljö & energi",
+    shortTitle: "Miljö",
+    subcategories: ["Klimatpolitik", "Elförsörjning", "Naturvård"],
+    description: "Rör klimatpolitik, energiförsörjning och naturvårdsfrågor i syfte att skapa ett hållbart samhälle.",
+    source: "Miljö & energi",
+    meta: "Klimatpolitik • Elförsörjning • Naturvård",
+    history: "Det här området fokuserar på hur samhällsekonomin, energisystemet och klimatmålen samspelar i omställningen.",
+    facts: [
+      "Energi- och klimatpolitiken påverkar både ekonomi och livskvalitet i vardagen.",
+      "Naturvård och klimatarbete hänger nära ihop med hur Sverige gör hållbara investeringar.",
+    ],
+    sources: [
+      { title: "Naturvårdsverket", url: "https://www.naturvardsverket.se/" },
+      { title: "Energimyndigheten", url: "https://www.energimyndigheten.se/" },
+    ],
+  },
+  {
+    id: "arbetsmarknad",
+    title: "Arbetsmarknad & socialpolitik",
+    shortTitle: "Arbetsmarknad",
+    subcategories: ["Sysselsättning", "A-kassa", "Socialförsäkringar"],
+    description: "Detta området handlar om jobb, arbetsvillkor, social trygghet och hur samhället stödjer arbetande människor.",
+    source: "Arbetsmarknad & socialpolitik",
+    meta: "Sysselsättning • A-kassa • Socialförsäkringar",
+    history: "Här jämförs hur olika politiska reformer påverkar tillväxt, trygghet och möjligheten att få arbete och försörjning.",
+    facts: [
+      "Sysselsättning och social trygghet hänger ihop med både ekonomisk tillväxt och livssituationer för familjer.",
+      "A-kassa och socialförsäkringar hjälper människor vid arbetslöshet, sjukdom och ekonomisk utsatthet.",
+    ],
+    sources: [
+      { title: "Arbetsförmedlingen", url: "https://www.arbetsformedlingen.se/" },
+      { title: "Försäkringskassan", url: "https://www.forsakringskassan.se/" },
+    ],
+  },
+  {
+    id: "forsvar",
+    title: "Försvar & utrikespolitik",
+    shortTitle: "Försvar",
+    subcategories: ["Försvar", "EU", "Internationella relationer"],
+    description: "Handlar om säkerhetspolitik, Sveriges försvar, EU-samarbete och relationer med andra länder.",
+    source: "Försvar & utrikespolitik",
+    meta: "Försvar • EU • Internationella relationer",
+    history: "Det här området omfattar säkerhet, utrikespolitik, internationellt samarbete och Sveriges roll i Europa och världen.",
+    facts: [
+      "Försvar och utrikespolitik påverkar både säkerhet, handel och Sveriges ställning i världen.",
+      "EU-samarbetet påverkar lagstiftning, ekonomi och samverkan i frågor som säkerhet och utrikespolitik.",
+    ],
+    sources: [
+      { title: "Utrikesdepartementet", url: "https://www.government.se/" },
+      { title: "EU-kommissionen", url: "https://ec.europa.eu/" },
+    ],
+  },
+];
+
+const nodeContent = {
+  start: {
+    title: "Din politiska karta",
+    description: "Skapa din prioritering av viktiga politikområden från topp till botten.",
+    source: "Ekonomi & skatter",
+    meta: "Övergripande prioritering · 7 kategorier",
+    history: "Använd listan för att rangordna de frågor som är viktigast för dig just nu.",
+    facts: [
+      "Det här diagrammet låter dig sätta din egen prioritering bland de viktigaste samhällsområdena.",
+      "Du kan flytta de olika kategorierna upp eller ner med hjälp av listan i högerkolumnen.",
+    ],
+    sources: categoryDefinitions.flatMap((category) => category.sources),
+  },
+  ...Object.fromEntries(categoryDefinitions.map((category) => [category.id, {
+    title: category.title,
+    description: category.description,
+    source: category.source,
+    meta: category.meta,
+    history: category.history,
+    facts: category.facts,
+    sources: category.sources,
+  }])),
+};
+
+const subcategoryParents = {};
+const customSubcategoryStorageKey = "kompass_custom_subcategories";
+const defaultSubcategoryCounts = Object.fromEntries(
+  categoryDefinitions.map((category) => [category.id, category.subcategories.length]),
+);
+
+function registerSubcategory(category, subcategory, nodeId) {
+  if (!nodeId) {
+    category.subcategories.push(subcategory);
+    nodeId = `${category.id}-sub-${category.subcategories.length}`;
+  }
+
+  subcategoryParents[nodeId] = category.id;
+  nodeContent[nodeId] = {
+    title: subcategory,
+    description: `${subcategory} är en del av ${category.title}. ${category.description}`,
+    source: category.title,
+    meta: `Underkategori · ${category.title}`,
+    history: category.history,
+    facts: category.facts,
+    sources: category.sources,
+  };
+  return nodeId;
+}
+
+categoryDefinitions.forEach((category) => {
+  category.subcategories.forEach((subcategory, index) => {
+    registerSubcategory(category, subcategory, `${category.id}-sub-${index + 1}`);
+  });
+});
+
+function loadCustomSubcategories() {
+  try {
+    const stored = localStorage.getItem(customSubcategoryStorageKey);
+    if (!stored) return;
+    const parsed = JSON.parse(stored);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return;
+
+    categoryDefinitions.forEach((category) => {
+      const savedNames = parsed[category.id];
+      if (!Array.isArray(savedNames)) return;
+      savedNames.forEach((name) => {
+        if (typeof name !== "string" || !name.trim()) return;
+        const subcategory = name.trim();
+        const duplicate = category.subcategories.some(
+          (existing) => existing.toLocaleLowerCase("sv-SE") === subcategory.toLocaleLowerCase("sv-SE"),
+        );
+        if (!duplicate) registerSubcategory(category, subcategory);
+      });
+    });
+  } catch (error) {
+    console.error("Kunde inte läsa sparade underkategorier.", error);
+  }
+}
+
+function saveCustomSubcategories() {
+  const customNames = Object.fromEntries(categoryDefinitions.map((category) => [
+    category.id,
+    category.subcategories.slice(defaultSubcategoryCounts[category.id]),
+  ]));
+  try {
+    localStorage.setItem(customSubcategoryStorageKey, JSON.stringify(customNames));
+    return true;
+  } catch (error) {
+    console.error("Kunde inte spara underkategorier.", error);
+    return false;
+  }
+}
+
+loadCustomSubcategories();
+
+const categoryIds = categoryDefinitions.map((category) => category.id);
+const categoryRankingStorageKey = "kompass_category_rankings";
+const categoryOrders = Object.fromEntries(
+  ["", ...Object.keys(partyProfiles)].map((partyName) => [partyName, [...categoryIds]]),
+);
+try {
+  const storedCategoryOrders = JSON.parse(localStorage.getItem(categoryRankingStorageKey) || "{}");
+  if (storedCategoryOrders && typeof storedCategoryOrders === "object" && !Array.isArray(storedCategoryOrders)) {
+    Object.keys(categoryOrders).forEach((partyName) => {
+      const storedOrder = storedCategoryOrders[partyName];
+      if (!Array.isArray(storedOrder)) return;
+      const validStoredIds = storedOrder.filter((id) => categoryIds.includes(id));
+      categoryOrders[partyName] = [...new Set([...validStoredIds, ...categoryIds])];
+    });
+  }
+} catch (error) {
+  console.error("Kunde inte läsa sparade kategorirangordningar.", error);
+}
+const categoryOrder = categoryOrders[""];
+let activeMapParty = "";
+let onboardingCategoryOrder = [];
+const subcategoryRankingStorageKey = "kompass_subcategory_rankings";
+const allSubcategoryIds = Object.keys(subcategoryParents);
+const subcategoryOrders = Object.fromEntries(
+  ["", ...Object.keys(partyProfiles)].map((partyName) => [partyName, [...allSubcategoryIds]]),
+);
+try {
+  const storedSubcategoryOrders = JSON.parse(localStorage.getItem(subcategoryRankingStorageKey) || "{}");
+  if (storedSubcategoryOrders && typeof storedSubcategoryOrders === "object" && !Array.isArray(storedSubcategoryOrders)) {
+    Object.keys(subcategoryOrders).forEach((partyName) => {
+      const storedOrder = storedSubcategoryOrders[partyName];
+      if (!Array.isArray(storedOrder)) return;
+      const validStoredIds = storedOrder.filter((id) => allSubcategoryIds.includes(id));
+      subcategoryOrders[partyName] = [...new Set([...validStoredIds, ...allSubcategoryIds])];
+    });
+  }
+} catch (error) {
+  console.error("Kunde inte läsa sparade underkategorirangordningar.", error);
+}
+const subcategoryOrder = subcategoryOrders[""];
+let onboardingSubcategoryOrder = [];
+let rankingKind = "category";
+let rankingSubcategoryPartyName = "";
+const sources = [];
+const conversationMessages = [];
+let activeNodeKey = "ekonomi";
+let rankingPartyName = "";
+let rankingTrigger = openRankingOnboarding;
+const mapContexts = [
+  {
+    canvas: mapCanvas,
+    scene: mapScene,
+    frame: mapSceneFrame,
+    zoomIn: mapZoomInButton,
+    zoomOut: mapZoomOutButton,
+    zoomLabel: mapZoomLabel,
+    showAll: mapShowAllButton,
+    partyName: "",
+    zoom: 0.85,
+    cameraX: 0,
+    cameraY: 0,
+    viewMode: "all",
+    focusedNode: null,
+    hasFitted: false,
+  },
+  {
+    canvas: partyMapCanvas,
+    scene: partyMapScene,
+    frame: partyMapSceneFrame,
+    zoomIn: partyMapZoomInButton,
+    zoomOut: partyMapZoomOutButton,
+    zoomLabel: partyMapZoomLabel,
+    showAll: partyMapShowAllButton,
+    partyName: "Socialdemokraterna",
+    zoom: 0.85,
+    cameraX: 0,
+    cameraY: 0,
+    viewMode: "all",
+    focusedNode: null,
+    hasFitted: false,
+  },
+];
+
+function buildDefaultMapNodePositions() {
+  const centerX = 1200;
+  const centerY = 900;
+  const nodeSize = 118;
+  const categoryRadius = 220;
+  const subRadius = 150;
+  const positions = {
+    start: { left: centerX - nodeSize / 2, top: centerY - nodeSize / 2 },
+  };
+
+  categoryOrder.forEach((categoryId, index) => {
+    const angle = (Math.PI * 2 * index) / categoryOrder.length - Math.PI / 2;
+    const x = centerX + Math.cos(angle) * categoryRadius;
+    const y = centerY + Math.sin(angle) * categoryRadius;
+    positions[categoryId] = {
+      left: x - nodeSize / 2,
+      top: y - nodeSize / 2,
+    };
+  });
+
+  subcategoryOrder.forEach((nodeId) => {
+    const parentId = subcategoryParents[nodeId];
+    const parentIndex = categoryOrder.indexOf(parentId);
+    if (parentIndex === -1) return;
+
+    const parentPosition = positions[parentId];
+    const parentCenterX = parentPosition.left + nodeSize / 2;
+    const parentCenterY = parentPosition.top + nodeSize / 2;
+    const parentAngle = (Math.PI * 2 * parentIndex) / categoryOrder.length - Math.PI / 2;
+    const relativeIndex = subcategoryOrder.filter((id) => subcategoryParents[id] === parentId).indexOf(nodeId);
+    const offsetAngle = parentAngle + (relativeIndex - (subcategoryOrder.filter((id) => subcategoryParents[id] === parentId).length - 1) / 2) * 0.9;
+    const x = parentCenterX + Math.cos(offsetAngle) * subRadius;
+    const y = parentCenterY + Math.sin(offsetAngle) * subRadius;
+    positions[nodeId] = {
+      left: x - nodeSize / 2,
+      top: y - nodeSize / 2,
+    };
+  });
+
+  return positions;
+}
+
+const defaultMapNodePositions = buildDefaultMapNodePositions();
+
+const nodePalette = {
+  start: { from: "#1f2937", to: "#4b5563", text: "#f8f9ff", subtext: "rgba(255,255,255,.78)" },
+  ekonomi: { from: "#f9d7a5", to: "#f0a65b", text: "#4a2b10", subtext: "rgba(74,43,16,.7)" },
+  valfard: { from: "#bfe7d9", to: "#7ac4ad", text: "#1b3d34", subtext: "rgba(27,61,52,.7)" },
+  lag: { from: "#d8d0ff", to: "#8d82df", text: "#271f4a", subtext: "rgba(39,31,74,.7)" },
+  migration: { from: "#f7c6d9", to: "#e689b0", text: "#4d1c2d", subtext: "rgba(77,28,45,.7)" },
+  miljo: { from: "#d6f5c6", to: "#7ac77f", text: "#1f4024", subtext: "rgba(31,64,36,.7)" },
+  arbetsmarknad: { from: "#ffd3be", to: "#f29a82", text: "#402217", subtext: "rgba(64,34,23,.7)" },
+  forsvar: { from: "#cfe8ff", to: "#7fa9de", text: "#18314d", subtext: "rgba(24,49,77,.7)" },
+};
+
+function applyNodePalette() {
+  document.querySelectorAll(".map-node").forEach((node) => {
+    node.title = "Dra för att flytta. Dubbelklicka för att zooma in och centrera.";
+    const palette = nodePalette[node.dataset.categoryId || node.dataset.node] || nodePalette.ekonomi;
+    node.style.background = `linear-gradient(135deg, ${palette.from}, ${palette.to})`;
+    node.style.borderColor = "rgba(255,255,255,.72)";
+    node.style.color = palette.text;
+    const label = node.querySelector("small");
+    if (label) {
+      label.style.color = palette.subtext;
+    }
+  });
+}
+
+function applyCategoryColor(element, categoryId) {
+  const palette = nodePalette[categoryId];
+  if (!palette) return;
+  element.style.borderLeftColor = palette.to;
+  element.style.borderLeftWidth = "4px";
+}
+
+function applyCategoryBadgeColor(element, categoryId) {
+  const palette = nodePalette[categoryId];
+  if (!palette) return;
+  element.style.backgroundColor = palette.from;
+  element.style.borderColor = palette.to;
+  element.style.color = palette.text;
+}
+
+function createSubcategoryNodes() {
+  if (!mapScene || !partyMapScene) return;
+
+  categoryDefinitions.forEach((category) => {
+    category.subcategories.forEach((subcategory, index) => {
+      const nodeId = `${category.id}-sub-${index + 1}`;
+      createSubcategoryNode(category, subcategory, nodeId, mapScene);
+      createSubcategoryNode(category, subcategory, nodeId, partyMapScene);
+    });
+  });
+}
+
+function createSubcategoryNode(category, subcategory, nodeId, scene = mapScene) {
+  const svg = scene?.querySelector(".map-connections");
+  if (!scene || !svg) return;
+  const node = document.createElement("button");
+  node.type = "button";
+  node.className = "map-node map-subcategory-node";
+  node.dataset.node = nodeId;
+  node.dataset.categoryId = category.id;
+  node.setAttribute("aria-pressed", "false");
+  node.setAttribute("aria-label", `${subcategory}, underkategori till ${category.title}`);
+
+  const label = document.createElement("span");
+  label.textContent = subcategory;
+  node.appendChild(label);
+  scene.appendChild(node);
+  applyNodePalette();
+
+  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  line.dataset.from = category.id;
+  line.dataset.connection = nodeId;
+  svg.appendChild(line);
+}
+
+function openSubcategoryForm(categoryId, card, addButton) {
+  const category = categoryDefinitions.find((item) => item.id === categoryId);
+  if (!category) return;
+
+  card.querySelector(".subcategory-add-form")?.remove();
+  const form = document.createElement("form");
+  form.className = "subcategory-add-form";
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.maxLength = 60;
+  input.required = true;
+  input.placeholder = "Ny underkategori";
+  input.setAttribute("aria-label", `Namn på underkategori i ${category.title}`);
+
+  const submitButton = document.createElement("button");
+  submitButton.type = "submit";
+  submitButton.className = "subcategory-add-submit";
+  submitButton.textContent = "Lägg till";
+
+  const cancelButton = document.createElement("button");
+  cancelButton.type = "button";
+  cancelButton.className = "subcategory-add-cancel";
+  cancelButton.textContent = "Avbryt";
+  cancelButton.addEventListener("click", () => {
+    form.remove();
+    addButton.focus();
+  });
+
+  const message = document.createElement("p");
+  message.className = "subcategory-add-message";
+  message.setAttribute("aria-live", "polite");
+
+  form.append(input, submitButton, cancelButton, message);
+  form.addEventListener("click", (event) => event.stopPropagation());
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const subcategory = input.value.trim();
+    if (!subcategory) {
+      message.textContent = "Skriv ett namn på underkategorin.";
+      input.focus();
+      return;
+    }
+
+    const duplicate = category.subcategories.some(
+      (existing) => existing.toLocaleLowerCase("sv-SE") === subcategory.toLocaleLowerCase("sv-SE"),
+    );
+    if (duplicate) {
+      message.textContent = "Den underkategorin finns redan i huvudkategorin.";
+      input.focus();
+      return;
+    }
+
+    const nodeId = registerSubcategory(category, subcategory);
+    Object.values(subcategoryOrders).forEach((order) => order.push(nodeId));
+    saveSubcategoryOrders();
+    createSubcategoryNode(category, subcategory, nodeId, mapScene);
+    createSubcategoryNode(category, subcategory, nodeId, partyMapScene);
+    updateRankedNodeSizes();
+    updateRankedNodeSizes(partyMapScene, categoryOrders[activeMapParty], subcategoryOrders[activeMapParty]);
+    const saved = saveCustomSubcategories();
+    selectMindmapNode(nodeId);
+    if (!saved) {
+      connectionMessage.textContent = "Underkategorin lades till, men kunde inte sparas i webbläsaren.";
+    }
+  });
+  card.appendChild(form);
+  input.focus();
+}
+
+function renderCategoryBadges(category) {
+  if (!categoryBadges) return;
+  categoryBadges.replaceChildren();
+  category.subcategories.forEach((item) => {
+    const badge = document.createElement("span");
+    badge.className = "category-badge";
+    badge.textContent = item;
+    applyCategoryBadgeColor(badge, category.id);
+    categoryBadges.appendChild(badge);
+  });
+}
+function renderCategoryCards(resizeNodes = true) {
+  if (!categoryList) return;
+  categoryList.replaceChildren();
+
+  categoryOrder.forEach((id, index) => {
+    const category = categoryDefinitions.find((item) => item.id === id);
+    if (!category) return;
+
+    const card = document.createElement("article");
+    const selectedCategory = subcategoryParents[activeNodeKey] || activeNodeKey;
+    card.className = `category-card${selectedCategory === id ? " is-selected" : ""}`;
+    card.draggable = true;
+    card.dataset.categoryId = id;
+    applyCategoryColor(card, id);
+
+    const header = document.createElement("div");
+    header.className = "category-card-header";
+
+    const title = document.createElement("p");
+    title.className = "category-card-title";
+    title.textContent = category.title;
+
+    const rank = document.createElement("span");
+    rank.className = "category-card-rank";
+    rank.textContent = `#${index + 1}`;
+
+    const badges = document.createElement("div");
+    badges.className = "category-card-badges";
+    category.subcategories.forEach((item) => {
+      const badge = document.createElement("span");
+      badge.className = "category-card-badge";
+      badge.textContent = item;
+      applyCategoryBadgeColor(badge, id);
+      badges.appendChild(badge);
+    });
+
+    const actions = document.createElement("div");
+    actions.className = "category-card-actions";
+
+    const upButton = document.createElement("button");
+    upButton.type = "button";
+    upButton.className = "category-card-button";
+    upButton.setAttribute("aria-label", `Flytta ${category.title} upp`);
+    upButton.textContent = "↑";
+    upButton.disabled = index === 0;
+    upButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      moveCategory(id, -1);
+    });
+
+    const downButton = document.createElement("button");
+    downButton.type = "button";
+    downButton.className = "category-card-button";
+    downButton.setAttribute("aria-label", `Flytta ${category.title} ner`);
+    downButton.textContent = "↓";
+    downButton.disabled = index === categoryOrder.length - 1;
+    downButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      moveCategory(id, 1);
+    });
+
+    const addButton = document.createElement("button");
+    addButton.type = "button";
+    addButton.className = "category-card-button";
+    addButton.setAttribute("aria-label", `Lägg till underkategori i ${category.title}`);
+    addButton.title = `Lägg till underkategori i ${category.title}`;
+    addButton.textContent = "+";
+    addButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openSubcategoryForm(id, card, addButton);
+    });
+
+    actions.append(upButton, downButton, addButton);
+    header.append(title, rank);
+    card.append(header, badges, actions);
+
+    card.addEventListener("click", () => selectMindmapNode(id));
+    card.addEventListener("dragstart", (event) => {
+      card.classList.add("dragging");
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/plain", id);
+    });
+    card.addEventListener("dragend", () => {
+      card.classList.remove("dragging");
+      document.querySelectorAll(".category-card").forEach((node) => node.classList.remove("drag-over"));
+    });
+    card.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      card.classList.add("drag-over");
+    });
+    card.addEventListener("dragleave", () => card.classList.remove("drag-over"));
+    card.addEventListener("drop", (event) => {
+      event.preventDefault();
+      card.classList.remove("drag-over");
+      const draggedId = event.dataTransfer.getData("text/plain");
+      reorderCategory(draggedId, id);
+    });
+
+    categoryList.appendChild(card);
+  });
+
+  if (resizeNodes) {
+    updateRankedNodeSizes();
+    if (mapContexts[0].viewMode === "all") fitMapToView(mapContexts[0]);
+  }
+}
+
+function renderSubcategoryCards(resizeNodes = true) {
+  if (!subcategoryList) return;
+  subcategoryList.replaceChildren();
+
+  subcategoryOrder.forEach((id, index) => {
+    const content = nodeContent[id];
+    const parentId = subcategoryParents[id];
+    const parent = categoryDefinitions.find((category) => category.id === parentId);
+    if (!content || !parent) return;
+
+    const card = document.createElement("article");
+    card.className = `category-card subcategory-card${activeNodeKey === id ? " is-selected" : ""}`;
+    card.draggable = true;
+    card.dataset.subcategoryId = id;
+    card.dataset.categoryId = parentId;
+    applyCategoryColor(card, parentId);
+
+    const header = document.createElement("div");
+    header.className = "category-card-header";
+
+    const title = document.createElement("p");
+    title.className = "category-card-title";
+    title.textContent = content.title;
+
+    const rank = document.createElement("select");
+    rank.className = "subcategory-rank-select";
+    rank.dataset.rankId = id;
+    rank.setAttribute("aria-label", `Placering för ${content.title}`);
+    subcategoryOrder.forEach((subcategoryId, rankIndex) => {
+      const option = document.createElement("option");
+      option.value = String(rankIndex + 1);
+      option.textContent = `#${rankIndex + 1}`;
+      option.selected = rankIndex === index;
+      rank.appendChild(option);
+    });
+    rank.addEventListener("click", (event) => event.stopPropagation());
+    rank.addEventListener("change", () => {
+      const requestedRank = Number(rank.value);
+      moveSubcategoryToRank(id, requestedRank - 1);
+    });
+
+    const parentLabel = document.createElement("small");
+    parentLabel.className = "subcategory-parent";
+    parentLabel.textContent = parent.title;
+    applyCategoryBadgeColor(parentLabel, parentId);
+
+    const actions = document.createElement("div");
+    actions.className = "category-card-actions";
+
+    const upButton = document.createElement("button");
+    upButton.type = "button";
+    upButton.className = "category-card-button";
+    upButton.setAttribute("aria-label", `Flytta ${content.title} upp`);
+    upButton.textContent = "↑";
+    upButton.disabled = index === 0;
+    upButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      moveSubcategory(id, -1);
+    });
+
+    const downButton = document.createElement("button");
+    downButton.type = "button";
+    downButton.className = "category-card-button";
+    downButton.setAttribute("aria-label", `Flytta ${content.title} ner`);
+    downButton.textContent = "↓";
+    downButton.disabled = index === subcategoryOrder.length - 1;
+    downButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      moveSubcategory(id, 1);
+    });
+
+    actions.append(upButton, downButton);
+    header.append(title, rank);
+    card.append(header, parentLabel, actions);
+
+    card.addEventListener("click", () => selectMindmapNode(id));
+    card.addEventListener("dragstart", (event) => {
+      card.classList.add("dragging");
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/plain", id);
+    });
+    card.addEventListener("dragend", () => {
+      card.classList.remove("dragging");
+      document.querySelectorAll(".subcategory-card").forEach((node) => node.classList.remove("drag-over"));
+    });
+    card.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      card.classList.add("drag-over");
+    });
+    card.addEventListener("dragleave", () => card.classList.remove("drag-over"));
+    card.addEventListener("drop", (event) => {
+      event.preventDefault();
+      card.classList.remove("drag-over");
+      reorderSubcategory(event.dataTransfer.getData("text/plain"), id);
+    });
+
+    subcategoryList.appendChild(card);
+  });
+
+  if (resizeNodes) updateRankedNodeSizes();
+}
+
+function moveCategory(id, direction) {
+  const currentIndex = categoryOrder.indexOf(id);
+  const nextIndex = currentIndex + direction;
+  if (currentIndex < 0 || nextIndex < 0 || nextIndex >= categoryOrder.length) return;
+
+  const [movedItem] = categoryOrder.splice(currentIndex, 1);
+  categoryOrder.splice(nextIndex, 0, movedItem);
+  saveCategoryOrders();
+  renderCategoryCards();
+}
+
+function moveSubcategory(id, direction) {
+  const currentIndex = subcategoryOrder.indexOf(id);
+  const nextIndex = currentIndex + direction;
+  if (currentIndex < 0 || nextIndex < 0 || nextIndex >= subcategoryOrder.length) return;
+
+  const [movedItem] = subcategoryOrder.splice(currentIndex, 1);
+  subcategoryOrder.splice(nextIndex, 0, movedItem);
+  saveSubcategoryOrders();
+  renderSubcategoryCards();
+}
+
+function moveSubcategoryToRank(id, targetIndex) {
+  const currentIndex = subcategoryOrder.indexOf(id);
+  if (currentIndex < 0 || targetIndex < 0 || targetIndex >= subcategoryOrder.length) return;
+
+  const [movedItem] = subcategoryOrder.splice(currentIndex, 1);
+  subcategoryOrder.splice(targetIndex, 0, movedItem);
+  saveSubcategoryOrders();
+  renderSubcategoryCards();
+  subcategoryList.querySelector(`[data-rank-id="${id}"]`)?.focus();
+}
+
+function reorderCategory(sourceId, targetId) {
+  if (!sourceId || !targetId || sourceId === targetId) return;
+  const from = categoryOrder.indexOf(sourceId);
+  const to = categoryOrder.indexOf(targetId);
+  if (from === -1 || to === -1) return;
+
+  const [movedItem] = categoryOrder.splice(from, 1);
+  categoryOrder.splice(to, 0, movedItem);
+  saveCategoryOrders();
+  renderCategoryCards();
+}
+
+function saveCategoryOrders() {
+  try {
+    localStorage.setItem(categoryRankingStorageKey, JSON.stringify(categoryOrders));
+  } catch (error) {
+    console.error("Kunde inte spara kategorirangordningarna.", error);
+  }
+}
+
+function saveSubcategoryOrders() {
+  try {
+    localStorage.setItem(subcategoryRankingStorageKey, JSON.stringify(subcategoryOrders));
+    return true;
+  } catch (error) {
+    console.error("Kunde inte spara underkategorirangordningarna.", error);
+    return false;
+  }
+}
+
+function reorderSubcategory(sourceId, targetId) {
+  if (!sourceId || !targetId || sourceId === targetId) return;
+  const from = subcategoryOrder.indexOf(sourceId);
+  const to = subcategoryOrder.indexOf(targetId);
+  if (from === -1 || to === -1) return;
+
+  const [movedItem] = subcategoryOrder.splice(from, 1);
+  subcategoryOrder.splice(to, 0, movedItem);
+  saveSubcategoryOrders();
+  renderSubcategoryCards();
+}
+
+function updateMapConnections(scene = mapScene) {
+  const svg = scene?.querySelector(".map-connections");
+  if (!scene || !svg || scene.clientWidth === 0) return;
+
+  svg.setAttribute("viewBox", `0 0 ${scene.clientWidth} ${scene.clientHeight}`);
+
+  svg.querySelectorAll("[data-connection]").forEach((line) => {
+    const source = scene.querySelector(`[data-node="${line.dataset.from || "start"}"]`);
+    const target = scene.querySelector(`[data-node="${line.dataset.connection}"]`);
+    if (!source || !target) return;
+    line.setAttribute("x1", source.offsetLeft + source.offsetWidth / 2);
+    line.setAttribute("y1", source.offsetTop + source.offsetHeight / 2);
+    line.setAttribute("x2", target.offsetLeft + target.offsetWidth / 2);
+    line.setAttribute("y2", target.offsetTop + target.offsetHeight / 2);
+  });
+}
+
+function preventNodeOverlap(node, nextLeft, nextTop) {
+  const scene = node.closest(".map-scene");
+  if (!scene) return { left: nextLeft, top: nextTop };
+
+  const canvasWidth = scene.clientWidth;
+  const canvasHeight = scene.clientHeight;
+  const nodeWidth = node.offsetWidth;
+  const nodeHeight = node.offsetHeight;
+  const edgePadding = 12;
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+  const hasOverlap = (left, top) => {
+    const rect = {
+      left,
+      top,
+      right: left + nodeWidth,
+      bottom: top + nodeHeight,
+    };
+
+    return [...scene.querySelectorAll(".map-node")].some((other) => {
+      if (other === node) return false;
+      const otherRect = {
+        left: other.offsetLeft,
+        top: other.offsetTop,
+        right: other.offsetLeft + other.offsetWidth,
+        bottom: other.offsetTop + other.offsetHeight,
+      };
+
+      const clearance = 8;
+      return rect.right + clearance > otherRect.left
+        && rect.left - clearance < otherRect.right
+        && rect.bottom + clearance > otherRect.top
+        && rect.top - clearance < otherRect.bottom;
+    });
+  };
+
+  const candidate = {
+    left: clamp(nextLeft, edgePadding, canvasWidth - nodeWidth - edgePadding),
+    top: clamp(nextTop, edgePadding, canvasHeight - nodeHeight - edgePadding),
+  };
+
+  if (!hasOverlap(candidate.left, candidate.top)) {
+    return candidate;
+  }
+
+  for (let distance = 8; distance <= Math.max(canvasWidth, canvasHeight); distance += 8) {
+    for (let dx = -distance; dx <= distance; dx += 8) {
+      const dy = distance - Math.abs(dx);
+      const verticalOffsets = dy === 0 ? [0] : [-dy, dy];
+      for (const offsetY of verticalOffsets) {
+        const testLeft = clamp(candidate.left + dx, edgePadding, canvasWidth - nodeWidth - edgePadding);
+        const testTop = clamp(candidate.top + offsetY, edgePadding, canvasHeight - nodeHeight - edgePadding);
+        if (!hasOverlap(testLeft, testTop)) {
+          return { left: testLeft, top: testTop };
+        }
+      }
+    }
+  }
+
+  return candidate;
+}
+
+function updateRankedNodeSizes(scene = mapScene, ranking = categoryOrder, subcategoryRanking = subcategoryOrder) {
+  if (!scene || scene.clientWidth === 0) return;
+
+  const scale = Math.min(1, Math.max(0.8, scene.clientWidth / 700));
+  const uniformNodeSize = Math.round(118 * scale);
+  const nodes = [...scene.querySelectorAll(".map-node")];
+  const centerNode = nodes.find((node) => node.dataset.node === "start");
+  if (centerNode) {
+    centerNode.style.width = `${uniformNodeSize}px`;
+    centerNode.style.height = `${uniformNodeSize}px`;
+    if (!centerNode.dataset.userMoved) {
+      centerNode.style.left = `${(scene.clientWidth - uniformNodeSize) / 2}px`;
+      centerNode.style.top = `${(scene.clientHeight - uniformNodeSize) / 2}px`;
+    }
+  }
+
+  ranking.forEach((id, index) => {
+    const node = nodes.find((item) => item.dataset.node === id);
+    if (!node) return;
+    const size = Math.max(86, Math.round((150 - index * 8) * scale));
+    const centerX = node.offsetLeft + node.offsetWidth / 2;
+    const centerY = node.offsetTop + node.offsetHeight / 2;
+    node.style.width = `${size}px`;
+    node.style.height = `${size}px`;
+    node.style.left = `${centerX - size / 2}px`;
+    node.style.top = `${centerY - size / 2}px`;
+  });
+
+  nodes.forEach((node) => {
+    if (node.dataset.defaultPositioned) return;
+    const position = defaultMapNodePositions[node.dataset.node];
+    if (!position) return;
+    const sizeOffset = node.dataset.node === "start" ? 0 : (uniformNodeSize - node.offsetWidth) / 2;
+    node.style.left = `${position.left + sizeOffset}px`;
+    node.style.top = `${position.top + sizeOffset}px`;
+    node.dataset.defaultPositioned = "true";
+  });
+
+  nodes.filter((node) => !node.dataset.categoryId && node !== centerNode).forEach((node) => {
+    const position = preventNodeOverlap(node, node.offsetLeft, node.offsetTop);
+    node.style.left = `${position.left}px`;
+    node.style.top = `${position.top}px`;
+  });
+
+  const subcategoryNodes = nodes.filter((node) => node.dataset.categoryId);
+  subcategoryNodes.forEach((node) => {
+    const rank = subcategoryRanking.indexOf(node.dataset.node);
+    const progress = subcategoryRanking.length > 1
+      ? Math.max(0, rank) / (subcategoryRanking.length - 1)
+      : 0;
+    const size = Math.round((128 - progress * 52) * scale);
+    const centerX = node.offsetLeft + node.offsetWidth / 2;
+    const centerY = node.offsetTop + node.offsetHeight / 2;
+    node.style.width = `${size}px`;
+    node.style.height = `${size}px`;
+    if (node.style.left) {
+      node.style.left = `${centerX - size / 2}px`;
+      node.style.top = `${centerY - size / 2}px`;
+    }
+  });
+
+  subcategoryNodes.forEach((node) => {
+    if (node.style.left) return;
+    const parent = nodes.find((item) => item.dataset.node === node.dataset.categoryId);
+    if (!parent) return;
+    const parentCenterX = parent.offsetLeft + parent.offsetWidth / 2;
+    const parentCenterY = parent.offsetTop + parent.offsetHeight / 2;
+    const centerX = centerNode.offsetLeft + centerNode.offsetWidth / 2;
+    const centerY = centerNode.offsetTop + centerNode.offsetHeight / 2;
+    let angle = Math.atan2(parentCenterY - centerY, parentCenterX - centerX);
+    if (Math.hypot(parentCenterX - centerX, parentCenterY - centerY) < 1) {
+      angle = ranking.indexOf(node.dataset.categoryId) * (Math.PI * 2 / ranking.length);
+    }
+
+    const subcategoryIndex = Number(node.dataset.node.split("-sub-")[1]) - 1;
+    angle += (subcategoryIndex - 1) * 0.9;
+    const radius = Math.round(150 * scale);
+    node.style.left = `${parentCenterX + Math.cos(angle) * radius - node.offsetWidth / 2}px`;
+    node.style.top = `${parentCenterY + Math.sin(angle) * radius - node.offsetHeight / 2}px`;
+  });
+
+  subcategoryNodes.forEach((node) => {
+    const position = preventNodeOverlap(node, node.offsetLeft, node.offsetTop);
+    node.style.left = `${position.left}px`;
+    node.style.top = `${position.top}px`;
+  });
+  updateMapConnections(scene);
+}
+
+function applyMapCamera(context, animate = true) {
+  if (!animate) context.scene.style.transition = "none";
+  context.scene.style.transform = `translate(${context.cameraX}px, ${context.cameraY}px) scale(${context.zoom})`;
+  context.zoomLabel.textContent = `${Math.round(context.zoom * 100)}%`;
+  context.zoomIn.disabled = context.zoom >= 1.8;
+  context.zoomOut.disabled = context.zoom <= 0.2;
+  if (!animate) {
+    context.scene.getBoundingClientRect();
+    context.scene.style.removeProperty("transition");
+  }
+}
+
+function setMapZoom(context, nextZoom, anchorX = context.canvas.clientWidth / 2, anchorY = context.canvas.clientHeight / 2) {
+  const worldX = (anchorX - context.cameraX) / context.zoom;
+  const worldY = (anchorY - context.cameraY) / context.zoom;
+  context.zoom = Math.min(1.8, Math.max(0.2, Number(nextZoom.toFixed(2))));
+  context.cameraX = anchorX - worldX * context.zoom;
+  context.cameraY = anchorY - worldY * context.zoom;
+  context.viewMode = "zoom";
+  context.focusedNode = null;
+  applyMapCamera(context);
+}
+
+function fitMapToView(context = mapContexts[0]) {
+  if (!context.canvas.clientWidth || !context.canvas.clientHeight) return;
+  const nodes = [...context.scene.querySelectorAll(".map-node")];
+  if (!nodes.length) return;
+  const padding = 36;
+  const bounds = nodes.reduce((result, node) => ({
+    left: Math.min(result.left, node.offsetLeft),
+    top: Math.min(result.top, node.offsetTop),
+    right: Math.max(result.right, node.offsetLeft + node.offsetWidth),
+    bottom: Math.max(result.bottom, node.offsetTop + node.offsetHeight),
+  }), { left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity });
+  const boundsWidth = bounds.right - bounds.left;
+  const boundsHeight = bounds.bottom - bounds.top;
+  context.zoom = Math.min(
+    1.8,
+    (context.canvas.clientWidth - padding * 2) / boundsWidth,
+    (context.canvas.clientHeight - padding * 2) / boundsHeight,
+  );
+  context.zoom = Math.max(0.2, context.zoom);
+  context.cameraX = (context.canvas.clientWidth - boundsWidth * context.zoom) / 2 - bounds.left * context.zoom;
+  context.cameraY = (context.canvas.clientHeight - boundsHeight * context.zoom) / 2 - bounds.top * context.zoom;
+  context.viewMode = "all";
+  context.focusedNode = null;
+  applyMapCamera(context, context.hasFitted);
+  context.hasFitted = true;
+}
+
+function focusMapNode(context, node) {
+  const isCenterNode = node.dataset.node === "start";
+  const zoom = isCenterNode
+    ? Math.max(context.zoom, 0.7)
+    : node.dataset.categoryId
+      ? Math.max(context.zoom, 1.25)
+      : Math.max(context.zoom, 0.95);
+  context.zoom = Math.min(1.65, zoom);
+  const nodeCenterX = node.offsetLeft + node.offsetWidth / 2;
+  const nodeCenterY = node.offsetTop + node.offsetHeight / 2;
+  context.cameraX = context.canvas.clientWidth / 2 - nodeCenterX * context.zoom;
+  context.cameraY = context.canvas.clientHeight / 2 - nodeCenterY * context.zoom;
+  context.viewMode = "node";
+  context.focusedNode = node;
+  applyMapCamera(context);
+}
+
+function bindMapCameraControls(context) {
+  context.zoomIn.addEventListener("click", () => setMapZoom(context, context.zoom + 0.15));
+  context.zoomOut.addEventListener("click", () => setMapZoom(context, context.zoom - 0.15));
+  context.showAll.addEventListener("click", () => fitMapToView(context));
+  context.canvas.addEventListener("wheel", (event) => {
+    event.preventDefault();
+    const canvasRect = context.canvas.getBoundingClientRect();
+    const anchorX = event.clientX - canvasRect.left;
+    const anchorY = event.clientY - canvasRect.top;
+    setMapZoom(context, context.zoom * Math.exp(-event.deltaY * 0.001), anchorX, anchorY);
+  }, { passive: false });
+  context.scene.addEventListener("dblclick", (event) => {
+    const node = event.target.closest(".map-node");
+    if (!node) return;
+    event.preventDefault();
+    selectMindmapNode(node.dataset.node, context.scene);
+    focusMapNode(context, node);
+  });
+}
+
+mapContexts.forEach(bindMapCameraControls);
+
+function setMenu(open) {
+  siteShell.classList.toggle("nav-open", open);
+  sidebarScrim.hidden = !open;
+  menuButton.setAttribute("aria-expanded", String(open));
+  menuButton.setAttribute("aria-label", open ? "Stäng navigation" : "Öppna navigation");
+}
+
+function renderOnboardingCategoryOrder() {
+  onboardingCategoryList.replaceChildren();
+  onboardingCategoryOrder.forEach((id, index) => {
+    const category = categoryDefinitions.find((item) => item.id === id);
+    if (!category) return;
+
+    const item = document.createElement("li");
+    item.className = "onboarding-category-item";
+    item.draggable = true;
+    item.dataset.categoryId = id;
+
+    item.addEventListener("dragstart", (event) => {
+      item.classList.add("is-dragging");
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/plain", id);
+    });
+    item.addEventListener("dragend", () => {
+      item.classList.remove("is-dragging");
+      onboardingCategoryList.querySelectorAll(".is-drop-target").forEach((row) => {
+        row.classList.remove("is-drop-target");
+      });
+    });
+    item.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+      item.classList.add("is-drop-target");
+    });
+    item.addEventListener("dragleave", (event) => {
+      if (!item.contains(event.relatedTarget)) item.classList.remove("is-drop-target");
+    });
+    item.addEventListener("drop", (event) => {
+      event.preventDefault();
+      item.classList.remove("is-drop-target");
+      const draggedId = event.dataTransfer.getData("text/plain");
+      const fromIndex = onboardingCategoryOrder.indexOf(draggedId);
+      const toIndex = onboardingCategoryOrder.indexOf(id);
+      if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return;
+
+      const [movedCategory] = onboardingCategoryOrder.splice(fromIndex, 1);
+      const targetRect = item.getBoundingClientRect();
+      const insertAfter = event.clientY >= targetRect.top + targetRect.height / 2;
+      const adjustedIndex = onboardingCategoryOrder.indexOf(id) + (insertAfter ? 1 : 0);
+      onboardingCategoryOrder.splice(adjustedIndex, 0, movedCategory);
+      renderOnboardingCategoryOrder();
+    });
+
+    const rank = document.createElement("span");
+    rank.className = "onboarding-category-rank";
+    rank.textContent = `#${index + 1}`;
+
+    const title = document.createElement("p");
+    title.className = "onboarding-category-title";
+    title.textContent = category.title;
+
+    const actions = document.createElement("div");
+    actions.className = "onboarding-category-actions";
+
+    const upButton = document.createElement("button");
+    upButton.type = "button";
+    upButton.textContent = "↑";
+    upButton.setAttribute("aria-label", `Flytta ${category.title} upp`);
+    upButton.disabled = index === 0;
+    upButton.addEventListener("click", () => moveOnboardingCategory(id, -1));
+
+    const downButton = document.createElement("button");
+    downButton.type = "button";
+    downButton.textContent = "↓";
+    downButton.setAttribute("aria-label", `Flytta ${category.title} ner`);
+    downButton.disabled = index === onboardingCategoryOrder.length - 1;
+    downButton.addEventListener("click", () => moveOnboardingCategory(id, 1));
+
+    actions.append(upButton, downButton);
+    item.append(rank, title, actions);
+    onboardingCategoryList.appendChild(item);
+  });
+}
+
+function renderOnboardingSubcategoryOrder() {
+  onboardingCategoryList.replaceChildren();
+  onboardingSubcategoryOrder.forEach((id, index) => {
+    const content = nodeContent[id];
+    const parent = categoryDefinitions.find((category) => category.id === subcategoryParents[id]);
+    if (!content || !parent) return;
+
+    const item = document.createElement("li");
+    item.className = "onboarding-category-item";
+    item.draggable = true;
+    item.dataset.categoryId = id;
+
+    item.addEventListener("dragstart", (event) => {
+      item.classList.add("is-dragging");
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/plain", id);
+    });
+    item.addEventListener("dragend", () => {
+      item.classList.remove("is-dragging");
+      onboardingCategoryList.querySelectorAll(".is-drop-target").forEach((row) => {
+        row.classList.remove("is-drop-target");
+      });
+    });
+    item.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+      item.classList.add("is-drop-target");
+    });
+    item.addEventListener("dragleave", (event) => {
+      if (!item.contains(event.relatedTarget)) item.classList.remove("is-drop-target");
+    });
+    item.addEventListener("drop", (event) => {
+      event.preventDefault();
+      item.classList.remove("is-drop-target");
+      const draggedId = event.dataTransfer.getData("text/plain");
+      const fromIndex = onboardingSubcategoryOrder.indexOf(draggedId);
+      const toIndex = onboardingSubcategoryOrder.indexOf(id);
+      if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return;
+
+      const [movedId] = onboardingSubcategoryOrder.splice(fromIndex, 1);
+      const targetRect = item.getBoundingClientRect();
+      const insertAfter = event.clientY >= targetRect.top + targetRect.height / 2;
+      const adjustedIndex = onboardingSubcategoryOrder.indexOf(id) + (insertAfter ? 1 : 0);
+      onboardingSubcategoryOrder.splice(adjustedIndex, 0, movedId);
+      renderOnboardingSubcategoryOrder();
+    });
+
+    const rank = document.createElement("span");
+    rank.className = "onboarding-category-rank";
+    rank.textContent = `#${index + 1}`;
+
+    const title = document.createElement("p");
+    title.className = "onboarding-category-title";
+    title.textContent = `${content.title} · ${parent.shortTitle}`;
+
+    const actions = document.createElement("div");
+    actions.className = "onboarding-category-actions";
+
+    const upButton = document.createElement("button");
+    upButton.type = "button";
+    upButton.textContent = "↑";
+    upButton.setAttribute("aria-label", `Flytta ${content.title} upp`);
+    upButton.disabled = index === 0;
+    upButton.addEventListener("click", () => moveOnboardingSubcategory(id, -1));
+
+    const downButton = document.createElement("button");
+    downButton.type = "button";
+    downButton.textContent = "↓";
+    downButton.setAttribute("aria-label", `Flytta ${content.title} ner`);
+    downButton.disabled = index === onboardingSubcategoryOrder.length - 1;
+    downButton.addEventListener("click", () => moveOnboardingSubcategory(id, 1));
+
+    actions.append(upButton, downButton);
+    item.append(rank, title, actions);
+    onboardingCategoryList.appendChild(item);
+  });
+}
+
+function moveOnboardingCategory(id, direction) {
+  const currentIndex = onboardingCategoryOrder.indexOf(id);
+  const nextIndex = currentIndex + direction;
+  if (currentIndex < 0 || nextIndex < 0 || nextIndex >= onboardingCategoryOrder.length) return;
+
+  const [movedItem] = onboardingCategoryOrder.splice(currentIndex, 1);
+  onboardingCategoryOrder.splice(nextIndex, 0, movedItem);
+  renderOnboardingCategoryOrder();
+  onboardingCategoryList.children[nextIndex]
+    ?.querySelector(direction < 0 ? "button:last-child" : "button:first-child")
+    ?.focus();
+}
+
+function moveOnboardingSubcategory(id, direction) {
+  const currentIndex = onboardingSubcategoryOrder.indexOf(id);
+  const nextIndex = currentIndex + direction;
+  if (currentIndex < 0 || nextIndex < 0 || nextIndex >= onboardingSubcategoryOrder.length) return;
+
+  const [movedItem] = onboardingSubcategoryOrder.splice(currentIndex, 1);
+  onboardingSubcategoryOrder.splice(nextIndex, 0, movedItem);
+  renderOnboardingSubcategoryOrder();
+  onboardingCategoryList.children[nextIndex]
+    ?.querySelector(direction < 0 ? "button:last-child" : "button:first-child")
+    ?.focus();
+}
+
+function closeRankingOnboarding() {
+  rankingOnboarding.hidden = true;
+  rankingTrigger.focus();
+}
+
+function showRankingOnboarding(partyName, trigger) {
+  rankingKind = "category";
+  rankingPartyName = partyName;
+  rankingTrigger = trigger;
+  onboardingCategoryOrder = [...categoryOrders[partyName]];
+  rankingOnboardingTitle.textContent = partyName
+    ? `Rangordna ${partyName}s kategorier`
+    : "Vad är viktigast för dig?";
+  rankingOnboardingDescription.textContent = "Flytta områdena så att det viktigaste hamnar högst. Kartan anpassas efter ordningen.";
+  renderOnboardingCategoryOrder();
+  rankingOnboarding.hidden = false;
+  closeRankingOnboardingButton.focus();
+}
+
+function showSubcategoryRanking(partyName, trigger) {
+  rankingKind = "subcategory";
+  rankingSubcategoryPartyName = partyName;
+  rankingTrigger = trigger;
+  onboardingSubcategoryOrder = [...subcategoryOrders[partyName]];
+  rankingOnboardingTitle.textContent = partyName
+    ? `Rangordna ${partyName}s underkategorier`
+    : "Rangordna underkategorier";
+  rankingOnboardingDescription.textContent = "Dra underkategorierna eller använd pilarna. Ordningen sparas separat för den här kartan.";
+  renderOnboardingSubcategoryOrder();
+  rankingOnboarding.hidden = false;
+  closeRankingOnboardingButton.focus();
+}
+
+function setView(view, updateHistory = true) {
+  const showMindmap = view === "mindmap";
+  const showPartyView = view === "party";
+  const showDebateView = view === "debate";
+  siteShell.classList.toggle("party-mode", showPartyView);
+  const hideHome = showMindmap || showPartyView || showDebateView;
+  const viewChanged = homeView.hidden !== hideHome
+    || mindmapPage.hidden !== !showMindmap
+    || partyView.hidden !== !showPartyView
+    || debateView.hidden !== !showDebateView;
+  homeView.hidden = hideHome;
+  mindmapPage.hidden = !showMindmap;
+  partyView.hidden = !showPartyView;
+  debateView.hidden = !showDebateView;
+  if (showMindmap) {
+    mapContexts.forEach((context) => {
+      updateRankedNodeSizes(context.scene, categoryOrders[context.partyName], subcategoryOrders[context.partyName]);
+      fitMapToView(context);
+    });
+  }
+  body.classList.toggle("chat-active", !hideHome && conversationMessages.length > 0);
+  document.querySelectorAll(".sidebar-link[data-view]").forEach((link) => {
+    link.classList.toggle("is-active", link.dataset.view === view);
+  });
+  setMenu(false);
+  if (updateHistory) {
+    const hash = showMindmap ? "#top" : showPartyView ? "#party-stugor" : showDebateView ? "#debatt" : "#samtal";
+    if (window.location.hash !== hash) window.history.pushState({ view }, "", hash);
+  }
+  if (viewChanged) window.scrollTo(0, 0);
+}
+
+function selectMapParty(partyName) {
+  const profile = partyName ? partyProfiles[partyName] : null;
+  if (!profile) return;
+  activeMapParty = partyName;
+  const partyContext = mapContexts[1];
+  partyContext.partyName = partyName;
+
+  const activeTab = [...mapPartyTabs].find((tab) => tab.dataset.mapParty === partyName);
+  mapPartyTabs.forEach((tab) => {
+    const selected = tab.dataset.mapParty === partyName;
+    tab.classList.toggle("is-active", selected);
+    tab.setAttribute("aria-selected", String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+  });
+
+  partyMapHeading.textContent = `${partyName}s karta`;
+  const partyCenterNode = partyMapScene.querySelector('[data-node="start"]');
+  partyCenterNode.querySelector("span").textContent = profile.abbreviation;
+  partyCenterNode.querySelector("small").textContent = partyName;
+  partyCenterNode.setAttribute("aria-label", `Politisk karta för ${partyName}`);
+  partyMapCanvas.setAttribute("aria-labelledby", activeTab.id);
+  partyMapCanvas.setAttribute("aria-label", `${partyName}s politiska karta. Dubbelklicka på en nod för att zooma in.`);
+  partyMapPanel.style.setProperty("--party-tint", profile.tint);
+  updateRankedNodeSizes(partyMapScene, categoryOrders[partyName], subcategoryOrders[partyName]);
+  openPartyRankingOnboarding.textContent = `Rangordna ${partyName}`;
+  if (!mindmapPage.hidden) fitMapToView(partyContext);
+}
+
+mapPartyTabs.forEach((tab) => {
+  tab.addEventListener("click", () => selectMapParty(tab.dataset.mapParty));
+  tab.addEventListener("keydown", (event) => {
+    const tabs = [...mapPartyTabs];
+    const currentIndex = tabs.indexOf(tab);
+    const nextIndex = event.key === "ArrowRight"
+      ? (currentIndex + 1) % tabs.length
+      : event.key === "ArrowLeft"
+        ? (currentIndex - 1 + tabs.length) % tabs.length
+        : event.key === "Home"
+          ? 0
+          : event.key === "End"
+            ? tabs.length - 1
+            : -1;
+    if (nextIndex < 0) return;
+    event.preventDefault();
+    tabs[nextIndex].focus();
+    selectMapParty(tabs[nextIndex].dataset.mapParty);
+  });
+});
+
+function renderSourceList(sourceItems) {
+  sourceList.replaceChildren();
+  if (sourceItems.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "source-empty";
+    empty.textContent = "Ställ en fråga för att bygga din källista.";
+    sourceList.appendChild(empty);
+    return;
+  }
+
+  sourceItems.forEach((source) => {
+    const entry = document.createElement("article");
+    entry.className = "source-entry";
+    const title = document.createElement("a");
+    title.href = source.url;
+    title.target = "_blank";
+    title.rel = "noopener noreferrer";
+    title.textContent = source.title;
+    const detail = document.createElement("span");
+    detail.textContent = source.detail;
+    entry.append(title, detail);
+    sourceList.appendChild(entry);
+  });
+}
+
+function selectMindmapNode(nodeKey, sourceScene = mapScene) {
+  const content = nodeContent[nodeKey];
+  if (!content) return;
+  activeNodeKey = nodeKey;
+  const categoryId = subcategoryParents[nodeKey] || nodeKey;
+  const category = categoryDefinitions.find((item) => item.id === categoryId) || categoryDefinitions[0];
+
+  nodeTitle.textContent = content.title;
+  nodeDescription.textContent = content.description;
+  nodeSource.textContent = content.source;
+  nodeSourceMeta.textContent = content.meta;
+  nodeHistory.textContent = content.history;
+  renderCategoryBadges(category);
+  renderCategoryCards(false);
+  renderSubcategoryCards(false);
+
+  nodeFacts.replaceChildren();
+  content.facts.forEach((fact) => {
+    const item = document.createElement("li");
+    item.textContent = fact;
+    nodeFacts.appendChild(item);
+  });
+  nodeEvidence.replaceChildren();
+  content.sources.forEach((source) => {
+    const item = document.createElement("li");
+    const link = document.createElement("a");
+    link.href = source.url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = source.title;
+    item.appendChild(link);
+    nodeEvidence.appendChild(item);
+  });
+  connectionMessage.textContent = "";
+  sourceScene.querySelectorAll(".map-node").forEach((node) => {
+    const selected = node.dataset.node === nodeKey;
+    node.classList.toggle("is-selected", selected);
+    node.setAttribute("aria-pressed", String(selected));
+  });
+}
+
+function setSources(open) {
+  sourcesPanel.hidden = !open;
+  if (open) {
+    setMenu(false);
+    closeSources.focus();
+  } else {
+    body.classList.remove("modal-open");
+  }
+
+}
+
+menuButton.addEventListener("click", () => {
+  setMenu(!siteShell.classList.contains("nav-open"));
+});
+
+sidebarScrim.addEventListener("click", () => setMenu(false));
+
+partyMapScene.replaceChildren(...[...mapScene.children].map((child) => child.cloneNode(true)));
+partyMapScene.querySelectorAll("[id]").forEach((element) => element.removeAttribute("id"));
+createSubcategoryNodes();
+renderLikedDebateMessages();
+partyRows.forEach((row) => row.setAttribute("aria-pressed", "false"));
+mapContexts.forEach((context) => {
+  context.scene.querySelectorAll(".map-node").forEach((node) => node.setAttribute("aria-pressed", "false"));
+});
+applyNodePalette();
+renderCategoryCards();
+selectMapParty("Socialdemokraterna");
+updateRankedNodeSizes(partyMapScene, categoryOrders.Socialdemokraterna, subcategoryOrders.Socialdemokraterna);
+selectMindmapNode("start");
+
+function bindMapPointerInteractions(context) {
+  let dragState = null;
+  let panState = null;
+  let suppressMapNodeClick = null;
+
+  context.canvas.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || event.target.closest(".map-node, .map-zoom-controls")) return;
+    panState = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      cameraX: context.cameraX,
+      cameraY: context.cameraY,
+    };
+    context.canvas.classList.add("is-panning");
+    try {
+      context.canvas.setPointerCapture(event.pointerId);
+    } catch {
+      // Window-level pointer handlers still support panning without capture.
+    }
+  });
+
+  context.scene.addEventListener("pointerdown", (event) => {
+    const node = event.target.closest(".map-node");
+    if (!node || event.button !== 0) return;
+    const canvasRect = context.canvas.getBoundingClientRect();
+    dragState = {
+      node,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      offsetX: (event.clientX - canvasRect.left - context.cameraX) / context.zoom - node.offsetLeft,
+      offsetY: (event.clientY - canvasRect.top - context.cameraY) / context.zoom - node.offsetTop,
+      moved: false,
+    };
+    if (node.setPointerCapture && !node.hasPointerCapture?.(event.pointerId)) {
+      try {
+        node.setPointerCapture(event.pointerId);
+      } catch {
+        // Window-level pointer handlers still support dragging without capture.
+      }
+    }
+  });
+
+  context.scene.addEventListener("click", (event) => {
+    const node = event.target.closest(".map-node");
+    if (!node) return;
+    if (suppressMapNodeClick === node) {
+      suppressMapNodeClick = null;
+      return;
+    }
+    selectMindmapNode(node.dataset.node, context.scene);
+  });
+
+  function stopPointerInteraction(event) {
+    if (panState && event.pointerId === panState.pointerId) {
+      panState = null;
+      context.canvas.classList.remove("is-panning");
+    }
+    if (dragState && event.pointerId === dragState.pointerId) {
+      if (dragState.moved) suppressMapNodeClick = dragState.node;
+      dragState = null;
+    }
+  }
+
+  window.addEventListener("pointermove", (event) => {
+    if (panState && event.pointerId === panState.pointerId) {
+      context.cameraX = panState.cameraX + event.clientX - panState.startX;
+      context.cameraY = panState.cameraY + event.clientY - panState.startY;
+      context.viewMode = "pan";
+      context.focusedNode = null;
+      applyMapCamera(context);
+      return;
+    }
+    if (!dragState || event.pointerId !== dragState.pointerId) return;
+    const { node, offsetX, offsetY } = dragState;
+    if (!dragState.moved && Math.hypot(event.clientX - dragState.startX, event.clientY - dragState.startY) < 4) return;
+    dragState.moved = true;
+    node.dataset.userMoved = "true";
+    const canvasRect = context.canvas.getBoundingClientRect();
+    const nextLeft = (event.clientX - canvasRect.left - context.cameraX) / context.zoom - offsetX;
+    const nextTop = (event.clientY - canvasRect.top - context.cameraY) / context.zoom - offsetY;
+    const adjusted = preventNodeOverlap(node, nextLeft, nextTop);
+    node.style.left = `${adjusted.left}px`;
+    node.style.top = `${adjusted.top}px`;
+    updateMapConnections(context.scene);
+  });
+
+  window.addEventListener("pointerup", stopPointerInteraction);
+  window.addEventListener("pointercancel", stopPointerInteraction);
+  context.canvas.addEventListener("pointerleave", () => {
+    if (!panState) context.canvas.classList.remove("is-panning");
+  });
+
+  const observer = new ResizeObserver(() => {
+    if (context.canvas.clientWidth === 0 || context.canvas.clientHeight === 0) return;
+    if (context.viewMode === "all") fitMapToView(context);
+    else if (context.viewMode === "node" && context.focusedNode) focusMapNode(context, context.focusedNode);
+  });
+  observer.observe(context.canvas);
+}
+
+mapContexts.forEach(bindMapPointerInteractions);
+
+siteMenu.querySelectorAll("a").forEach((link) => {
+  link.addEventListener("click", (event) => {
+    setMenu(false);
+    if (link.dataset.view === "home") {
+      event.preventDefault();
+      setView("home");
+      window.scrollTo(0, 0);
+    } else if (homeView.hidden) {
+      event.preventDefault();
+      const target = document.querySelector(link.hash);
+      setView("home");
+      window.setTimeout(() => target?.scrollIntoView({ behavior: "smooth" }), 0);
+    }
+  });
+});
+
+homeLink.addEventListener("click", (event) => {
+  event.preventDefault();
+  setView("home");
+  window.scrollTo(0, 0);
+});
+
+mindmapButton.addEventListener("click", () => setView("mindmap"));
+partyViewButton.addEventListener("click", () => {
+  resetPartyPicker();
+  setView("party");
+});
+debateViewButton.addEventListener("click", () => setView("debate"));
+
+sourcesButton.addEventListener("click", () => {
+  renderSourceList(sources);
+  setSources(true);
+});
+closeSources.addEventListener("click", () => setSources(false));
+sourcesPanel.addEventListener("click", (event) => {
+  if (event.target === sourcesPanel) setSources(false);
+});
+
+openNodeSources.addEventListener("click", () => {
+  renderSourceList(nodeContent[activeNodeKey].sources.map((source) => ({
+    ...source,
+    detail: `Källa kopplad till ämnet ${nodeContent[activeNodeKey].title}.`,
+  })));
+  setSources(true);
+});
+
+function updateDebatePartyCount() {
+  const selectedCount = [...debatePartyOptions].filter((option) => option.checked).length;
+  debatePartyCount.textContent = `${selectedCount} av ${debatePartyOptions.length} partier valda`;
+}
+
+debatePartyOptions.forEach((option) => {
+  option.addEventListener("change", updateDebatePartyCount);
+});
+
+debateForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const question = debateInput.value.trim();
+  const selectedParties = [...debatePartyOptions]
+    .filter((option) => option.checked)
+    .map((option) => option.value);
+
+  if (selectedParties.length === 0) {
+    debateFeedback.textContent = "Välj minst ett parti som ska delta.";
+    debatePartyOptions[0].focus();
+    return;
+  }
+  if (!question) {
+    debateFeedback.textContent = "Skriv en fråga till debatten.";
+    debateInput.focus();
+    return;
+  }
+
+  debateLog.querySelector(".debate-empty")?.remove();
+  appendDebateMessage(question, "debate-user-message");
+  debateFeedback.textContent = "";
+  debateInput.value = "";
+
+  selectedParties.forEach((partyName, index) => {
+    const profile = partyProfiles[partyName];
+    const normalizedQuestion = question
+      .toLocaleLowerCase("sv-SE")
+      .replace(/[?!.,]+$/, "")
+      .trim();
+    let answer = `Det här är ett prototypsvar från ${partyName} om frågan: “${question}”. Läs mer om partiets politik via källan.`;
+    if (normalizedQuestion === "vad tycker ni om centern") {
+      if (partyName === "Socialdemokraterna") {
+        answer = "Vi vill jätte gärna samarbeta med dem";
+      } else if (partyName === "Sverigedemokraterna") {
+        answer = "Så länge jag får mina stolar i riksdagen";
+      }
+    }
+    if (normalizedQuestion === "blah blah blah") {
+      if (partyName === "Socialdemokraterna") {
+        answer = "Vi vill jätte gärna samarbeta med dem";
+      } else if (partyName === "Sverigedemokraterna") {
+        answer = "Så länge jag får mina stolar i riksdagen";
+      } else if (partyName === "Centerpartiet") {
+        answer = "Mjaaa Vänstern och SD ska inte få poster i riksdagen";
+      }
+    }
+    window.setTimeout(() => {
+      appendDebateMessage(
+        answer,
+        "debate-party-message",
+        partyName,
+        profile,
+      );
+    }, 250 * (index + 1));
+  });
+});
+
+function appendDebateMessage(text, className, partyName = "", profile = null) {
+  const message = document.createElement("article");
+  message.className = className;
+  if (className === "debate-party-message") {
+    message.dataset.debateMessageId = window.crypto?.randomUUID?.()
+      || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  }
+  if (profile) {
+    const logo = document.createElement("img");
+    logo.src = profile.logo;
+    logo.alt = "";
+    message.append(logo);
+  }
+
+  const content = document.createElement("div");
+  if (partyName) {
+    const heading = document.createElement("strong");
+    heading.textContent = partyName;
+    content.append(heading);
+  }
+  const paragraph = document.createElement("p");
+  paragraph.textContent = text;
+  content.append(paragraph);
+  if (profile) {
+    const source = document.createElement("a");
+    source.href = profile.url;
+    source.target = "_blank";
+    source.rel = "noreferrer";
+    source.textContent = `Källa: ${partyName} ↗`;
+    content.append(source);
+  }
+  message.append(content);
+  if (className === "debate-party-message") {
+    const likeButton = document.createElement("button");
+    likeButton.type = "button";
+    likeButton.className = "debate-like-button";
+    setDebateLikeButtonState(likeButton, partyName, false);
+    likeButton.addEventListener("click", () => {
+      const liked = likeButton.getAttribute("aria-pressed") !== "true";
+      const savedMessage = {
+        id: message.dataset.debateMessageId,
+        partyName,
+        text,
+        sourceUrl: profile?.url || "",
+      };
+      setDebateMessageLiked(savedMessage, liked);
+    });
+    message.append(likeButton);
+  }
+  debateLog.append(message);
+  message.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function setDebateLikeButtonState(button, partyName, liked) {
+  button.textContent = liked ? "♥" : "♡";
+  button.classList.toggle("is-liked", liked);
+  button.setAttribute("aria-pressed", String(liked));
+  const label = `${liked ? "Ta bort gilla-markering från" : "Gilla"} ${partyName}s svar`;
+  button.setAttribute("aria-label", label);
+  button.title = label;
+}
+
+function saveLikedDebateMessages() {
+  try {
+    localStorage.setItem(likedDebateStorageKey, JSON.stringify(likedDebateMessages));
+  } catch (error) {
+    debateFeedback.textContent = "Det gillade svaret kunde inte sparas i den här webbläsaren.";
+  }
+}
+
+function setDebateMessageLiked(message, liked) {
+  likedDebateMessages = likedDebateMessages.filter((item) => item.id !== message.id);
+  if (liked) likedDebateMessages.unshift(message);
+  saveLikedDebateMessages();
+
+  const originalButton = debateLog.querySelector(`[data-debate-message-id="${message.id}"] .debate-like-button`);
+  if (originalButton) setDebateLikeButtonState(originalButton, message.partyName, liked);
+  renderLikedDebateMessages();
+}
+
+function renderLikedDebateMessages() {
+  if (!likedDebateList) return;
+  likedDebateList.replaceChildren();
+
+  if (likedDebateMessages.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "mindmap-liked-empty";
+    empty.textContent = "Gillade debattsvar visas här.";
+    likedDebateList.appendChild(empty);
+    return;
+  }
+
+  likedDebateMessages.forEach((savedMessage) => {
+    const entry = document.createElement("article");
+    entry.className = "mindmap-liked-entry";
+
+    const header = document.createElement("header");
+    header.className = "mindmap-liked-entry-header";
+    const partyName = document.createElement("strong");
+    partyName.textContent = savedMessage.partyName;
+
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.className = "mindmap-liked-remove";
+    removeButton.textContent = "♥";
+    removeButton.setAttribute("aria-label", `Ta bort gillning från ${savedMessage.partyName}s svar`);
+    removeButton.title = "Ta bort gillning";
+    removeButton.addEventListener("click", () => setDebateMessageLiked(savedMessage, false));
+    header.append(partyName, removeButton);
+
+    const text = document.createElement("p");
+    text.textContent = savedMessage.text;
+    entry.append(header, text);
+
+    if (savedMessage.sourceUrl) {
+      const source = document.createElement("a");
+      source.href = savedMessage.sourceUrl;
+      source.target = "_blank";
+      source.rel = "noopener noreferrer";
+      source.textContent = `Källa: ${savedMessage.partyName} ↗`;
+      entry.appendChild(source);
+    }
+
+    likedDebateList.appendChild(entry);
+  });
+}
+
+partyOptions.forEach((option) => {
+  option.addEventListener("click", () => {
+    selectedParty = option.dataset.party;
+    const profile = partyProfiles[selectedParty];
+    partyView.style.setProperty("--party-tint", profile.tint);
+    partyOptions.forEach((partyOption) => {
+      partyOption.setAttribute("aria-pressed", String(partyOption === option));
+    });
+    partyChatLogo.src = profile.logo;
+    partyChatLogo.alt = `${selectedParty}s logotyp`;
+    partyChatTitle.textContent = `${selectedParty} Valstuga`;
+    partyChatLog.replaceChildren();
+    appendPartyMessage(`Hej! Här kan du ställa frågor om ${selectedParty}. Vad undrar du?`, "assistant-message", profile.url, selectedParty);
+    partyPicker.hidden = true;
+    partyChat.hidden = false;
+    partyChatInput.focus();
+  });
+});
+
+function resetPartyPicker() {
+  partyChat.hidden = true;
+  partyPicker.hidden = false;
+  selectedParty = "";
+  partyChatInput.value = "";
+  partyChatLog.replaceChildren();
+  partyChatLogo.removeAttribute("src");
+  partyChatLogo.alt = "";
+  partyChatTitle.textContent = "";
+  partyView.style.removeProperty("--party-tint");
+  partyOptions.forEach((option) => option.setAttribute("aria-pressed", "false"));
+}
+
+partyBack.addEventListener("click", resetPartyPicker);
+
+partyChatForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const question = partyChatInput.value.trim();
+  if (!selectedParty || !question) return;
+
+  appendPartyMessage(question, "user-message");
+  partyChatInput.value = "";
+  window.setTimeout(() => {
+    appendPartyMessage(`Tack för din fråga. Det här är en prototyp och svaret kommer inte från ${selectedParty}. Läs mer på partiets webbplats.`, "assistant-message", partyProfiles[selectedParty].url, selectedParty);
+  }, 350);
+});
+
+function appendPartyMessage(text, className, sourceUrl = "", sourceName = "") {
+  const message = document.createElement("div");
+  message.className = `party-message ${className}`;
+
+  if (className === "assistant-message") {
+    const avatar = document.createElement("span");
+    avatar.className = "party-message-avatar";
+    avatar.textContent = "V";
+    message.append(avatar);
+  }
+
+  const paragraph = document.createElement("p");
+  paragraph.textContent = text;
+  if (className === "assistant-message") {
+    const source = document.createElement("a");
+    source.className = "party-source-bubble";
+    source.href = sourceUrl;
+    source.target = "_blank";
+    source.rel = "noreferrer";
+    source.textContent = `Källa: ${sourceName} ↗`;
+    paragraph.append(source);
+  }
+
+  message.append(paragraph);
+  partyChatLog.append(message);
+  message.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+railToggle.addEventListener("click", () => {
+  const isExpanded = railToggle.getAttribute("aria-expanded") === "true";
+  setPartyRailCollapsed(isExpanded);
+});
+
+viewButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    partyRail.dataset.view = button.dataset.view;
+    viewButtons.forEach((viewButton) => {
+      viewButton.setAttribute("aria-pressed", String(viewButton === button));
+    });
+  });
+});
+
+document.querySelectorAll(".party-row").forEach((row) => {
+  row.style.setProperty("--match", `${row.dataset.match}%`);
+});
+
+connectionForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const connection = connectionInput.value.trim();
+  if (!connection) {
+    connectionMessage.textContent = "Skriv något att koppla till kartan.";
+    connectionInput.focus();
+    return;
+  }
+  connectionMessage.textContent = `“${connection}” har lagts till i din karta.`;
+  connectionInput.value = "";
+});
+
+themeToggle.addEventListener("click", () => {
+  body.classList.toggle("dark-mode");
+  themeToggle.setAttribute(
+    "aria-label",
+    body.classList.contains("dark-mode") ? "Byt till ljust tema" : "Byt till mörkt tema",
+  );
+});
+// Wallahi
+function askQuestion(question) {
+  const cleanQuestion = question.trim();
+  if (!cleanQuestion) {
+    questionMessage.textContent = "Skriv en fråga så börjar vi utforska.";
+    questionInput.focus();
+    return;
+  }
+
+  if (conversationMessages.length === 0) {
+    askSection.classList.add("is-chat-active");
+    body.classList.add("chat-active");
+    newConversationButton.hidden = false;
+    window.scrollTo(0, 0);
+    questionInput.placeholder = "Ställ en följdfråga...";
+    if (mobileNavigation.matches && !partyRail.classList.contains("is-collapsed")) {
+      setPartyRailCollapsed(true);
+    }
+  }
+
+  questionMessage.textContent = "";
+  const normalizedQuestion = cleanQuestion.toLocaleLowerCase("sv-SE");
+  let answer = "Jag vet tyvärr ingen om det än. Ställ en ny fråga";
+  let answerSources = [];
+  if (normalizedQuestion === "vilka frågor kan jag ställa") {
+    answer = [
+      "Här är alla frågor med hårdkodade svar:",
+      "• Bensinskatt",
+      "• vad är yttrandefrihetsgrundlagen",
+      "• vad är tryckfrihetsförordningen",
+      "• funkar det hära",
+    ].join("\n");
+  } else if (normalizedQuestion === "bensinskatt") {
+    answer = "Skatten på bensin i Sverige består av tre delar: **energiskatt**, **koldioxidskatt** och **moms**";
+    answerSources = [{
+      title: "Ekonomifakta · Bensinskatt",
+      url: "https://www.ekonomifakta.se/sakomraden/energi/styrmedel/bensinskatt_1208679.html",
+    }];
+  } else if (normalizedQuestion === "vad är energiskatt") {
+    answer = "**Energiskatt:** 1,52 kr per liter (ordinarie nivå), men har varit tillfälligt sänkt. Den sänkningen upphörde den 1 oktober 2026, vilket höjde skatten med cirka 1 krona per liter inklusive moms";
+    answerSources = [{
+      title: "Ekonomifakta · Bensinskatt",
+      url: "https://www.ekonomifakta.se/sakomraden/energi/styrmedel/bensinskatt_1208679.html",
+    }];
+  } else if (normalizedQuestion === "vad är koldioxidskatt") {
+    answer = "**Koldioxidskatt:** 0,87 kr per liter (ordinarie nivå), men är för tillfället nedsatt med 2,40 kr per liter fram till den 30 november 2026. Den återgår till ordinarie nivå den 1 december 2026.";
+    answerSources = [{
+      title: "Ekonomifakta · Bensinskatt",
+      url: "https://www.ekonomifakta.se/sakomraden/energi/styrmedel/bensinskatt_1208679.html",
+    }];
+  } else if (normalizedQuestion === "vad är moms") {
+    answer = "**Moms:** 25% på bensinpriset inklusive skatter. Momsen beräknas på priset inklusive energiskatt och koldioxidskatt.";
+    answerSources = [{
+      title: "Ekonomifakta · Bensinskatt",
+      url: "https://www.ekonomifakta.se/sakomraden/energi/styrmedel/bensinskatt_1208679.html",
+    }];
+  } else if (normalizedQuestion === "funkar det hära") {
+    answer = "Ja, det funkar!";
+  } else if (normalizedQuestion === "vad är yttrandefrihetsgrundlagen") {
+    answer = "Yttrandefrihetsgrundlagen är en del av Sveriges konstitution och garanterar rätten till frihet i uttryck och tänkande.";
+    answerSources = [{
+      title: "Regeringen · Yttrandefrihetsgrundlagen",
+      url: "https://www.regeringen.se/artiklar/2023/01/yttrande--och-demonstrationsfrihet-i-sverige/",
+    }];
+  } else if (normalizedQuestion === "vad är tryckfrihetsförordningen") {
+    answer = "Tryckfrihetsförordningen är en del av Sveriges konstitution och reglerar tryckfriheten, inklusive rätten att publicera och sprida information i tryckt form.";
+    answerSources = [{
+      title: "Regeringen · Tryckfrihetsförordningen",
+      url: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/tryckfrihetsforordning-1949105_sfs-1949-105/",
+    }];
+  } 
+
+  conversationMessages.push(
+  { role: "user", content: cleanQuestion, sources: [] },
+    { role: "assistant", content: answer, sources: answerSources },
+  );
+  renderConversation();
+  questionInput.value = "";
+}
+
+function renderConversation() {
+  conversation.replaceChildren();
+  if (conversationMessages.length === 0) {
+    const emptyState = document.createElement("div");
+    emptyState.className = "conversation-empty";
+    emptyState.textContent = "Din dialog visas här.";
+    conversation.appendChild(emptyState);
+    return;
+  }
+
+  conversationMessages.forEach(({ role, content, sources: messageSources }) => {
+    const element = document.createElement("article");
+    element.className = `chat-message ${role}`;
+    const speaker = document.createElement("span");
+    speaker.className = "chat-message-speaker";
+    speaker.textContent = role === "user" ? "Du" : "Kompass";
+    element.appendChild(speaker);
+
+    const messageText = document.createElement("p");
+    messageText.className = "chat-message-text";
+    content.split(/(\*\*.+?\*\*)/g).forEach((part) => {
+      if (part.startsWith("**") && part.endsWith("**")) {
+        const strong = document.createElement("strong");
+        strong.textContent = part.slice(2, -2);
+        messageText.appendChild(strong);
+      } else {
+        messageText.appendChild(document.createTextNode(part));
+      }
+    });
+    element.appendChild(messageText);
+
+    if (role === "assistant" && messageSources.length > 0) {
+      const sourceRow = document.createElement("div");
+      sourceRow.className = "chat-sources";
+      const label = document.createElement("span");
+      label.className = "chat-sources-label";
+      label.textContent = "Källor";
+      sourceRow.appendChild(label);
+      messageSources.forEach((source) => {
+        const link = document.createElement("a");
+        link.className = "chat-source";
+        link.href = source.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = source.title;
+        sourceRow.appendChild(link);
+      });
+      element.appendChild(sourceRow);
+    }
+    conversation.appendChild(element);
+  });
+  requestAnimationFrame(() => {
+    conversation.scrollTop = conversation.scrollHeight;
+  });
+}
+
+function setPartyRailCollapsed(collapsed) {
+  partyRail.classList.toggle("is-collapsed", collapsed);
+  railToggle.setAttribute("aria-expanded", String(!collapsed));
+  railToggle.querySelector(".rail-toggle-label").textContent = collapsed
+    ? "Visa jämförelse"
+    : "Dölj jämförelse";
+}
+
+function startNewConversation() {
+  conversationMessages.length = 0;
+  sources.length = 0;
+  renderConversation();
+  renderSourceList(sources);
+  askSection.classList.remove("is-chat-active");
+  body.classList.remove("chat-active");
+  newConversationButton.hidden = true;
+  questionInput.value = "";
+  questionInput.placeholder = "Vad vill du veta mer om?";
+  questionMessage.textContent = "";
+  if (partyRail.classList.contains("is-collapsed")) {
+    setPartyRailCollapsed(false);
+  }
+  window.scrollTo(0, 0);
+  questionInput.focus();
+}
+
+questionForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  askQuestion(questionInput.value);
+});
+
+newConversationButton.addEventListener("click", startNewConversation);
+
+document.querySelectorAll("[data-question]").forEach((button) => {
+  button.addEventListener("click", () => askQuestion(button.dataset.question));
+});
+
+partyRows.forEach((row) => {
+  row.addEventListener("click", () => {
+    partyRows.forEach((item) => item.classList.remove("is-selected"));
+    row.classList.add("is-selected");
+    const match = row.dataset.match;
+    questionMessage.textContent = `${row.dataset.party} matchar ${match}% av dina markerade frågor.`;
+    document.getElementById("ask").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+});
+
+compareButton.addEventListener("click", () => {
+  questionMessage.textContent = "Jämförelsen är redo att utforskas — välj ett parti i listan.";
+  document.getElementById("compare").scrollIntoView({ behavior: "smooth", block: "center" });
+});
+
+function toggleDialog(open) {
+  aboutDialog.hidden = !open;
+}
+
+aboutButtons.forEach((button) => button.addEventListener("click", () => toggleDialog(true)));
+closeDialog.addEventListener("click", () => toggleDialog(false));
+aboutDialog.addEventListener("click", (event) => {
+  if (event.target === aboutDialog) toggleDialog(false);
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    setMenu(false);
+    toggleDialog(false);
+    setSources(false);
+    if (!rankingOnboarding.hidden) closeRankingOnboarding();
+  }
+});
+
+openRankingOnboarding.addEventListener("click", () => showRankingOnboarding("", openRankingOnboarding));
+openPartyRankingOnboarding.addEventListener("click", () => {
+  showRankingOnboarding(activeMapParty, openPartyRankingOnboarding);
+});
+openSubcategoryRankingPersonal.addEventListener("click", () => {
+  showSubcategoryRanking("", openSubcategoryRankingPersonal);
+});
+openSubcategoryRankingParty.addEventListener("click", () => {
+  showSubcategoryRanking(activeMapParty, openSubcategoryRankingParty);
+});
+closeRankingOnboardingButton.addEventListener("click", closeRankingOnboarding);
+cancelRankingOnboardingButton.addEventListener("click", closeRankingOnboarding);
+rankingOnboarding.addEventListener("click", (event) => {
+  if (event.target === rankingOnboarding) closeRankingOnboarding();
+});
+saveRankingOnboardingButton.addEventListener("click", () => {
+  if (rankingKind === "subcategory") {
+    subcategoryOrders[rankingSubcategoryPartyName] = [...onboardingSubcategoryOrder];
+    saveSubcategoryOrders();
+    const context = mapContexts.find((item) => item.partyName === rankingSubcategoryPartyName);
+    if (context) {
+      updateRankedNodeSizes(
+        context.scene,
+        categoryOrders[rankingSubcategoryPartyName],
+        subcategoryOrders[rankingSubcategoryPartyName],
+      );
+      if (context.viewMode === "all") fitMapToView(context);
+    }
+    if (rankingSubcategoryPartyName === "") renderSubcategoryCards();
+  } else if (rankingPartyName === "") {
+    categoryOrder.splice(0, categoryOrder.length, ...onboardingCategoryOrder);
+    categoryOrders[""] = categoryOrder;
+    saveCategoryOrders();
+    renderCategoryCards();
+  } else {
+    categoryOrders[rankingPartyName] = [...onboardingCategoryOrder];
+    saveCategoryOrders();
+    updateRankedNodeSizes(
+      partyMapScene,
+      categoryOrders[rankingPartyName],
+      subcategoryOrders[rankingPartyName],
+    );
+    if (mapContexts[1].viewMode === "all") fitMapToView(mapContexts[1]);
+  }
+  closeRankingOnboarding();
+});
+
+mobileNavigation.addEventListener("change", (event) => {
+  setMenu(false);
+});
+window.addEventListener("popstate", () => {
+  const hash = window.location.hash;
+  setView(hash === "#samtal" ? "home" : hash === "#party-stugor" ? "party" : hash === "#debatt" ? "debate" : "mindmap", false);
+});
+const initialHash = window.location.hash;
+setView(initialHash === "#party-stugor" ? "party" : initialHash === "#debatt" ? "debate" : initialHash === "#top" ? "mindmap" : "home", false);
